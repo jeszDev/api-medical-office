@@ -9,4 +9,14 @@ class Patient extends Model
 {
     /** @use HasFactory<\Database\Factories\PatientFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'nombre',
+        'primer_apellido',
+        'segundo_apellido',
+        'fecha_nacimiento',
+        'telefono',
+        'correo_electronico',
+        'observaciones'
+    ];
 }
