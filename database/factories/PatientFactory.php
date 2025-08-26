@@ -21,7 +21,7 @@ class PatientFactory extends Factory
             'nombre' => $this->faker->firstName(),
             'primer_apellido' => $this->faker->lastName(),
             'segundo_apellido' => $this->faker->optional(0.7)->lastName(),
-            'fecha_nacimiento' => $this->faker->optional(0.8)->dateTimeBetween('-80 years', '-18 years')->format('Y-d-m'),
+            'fecha_nacimiento' => optional($this->faker->optional(0.8)->dateTimeBetween('-80 years', '-18 years'))->format('Y-m-d'),
             'telefono' => $this->faker->optional('0.9')->phoneNumber(),
             'correo_electronico' => $this->faker->optional(0.7)->safeEmail(),
             'observaciones' => $this->faker->optional(0.4)->text(200),
