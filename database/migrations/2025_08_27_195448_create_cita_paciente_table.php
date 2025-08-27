@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('cita_paciente', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('cita_id')->constrained(
+                table: 'citas', indexName: 'cita_id'
+            );
+            $table->foreignId('paciente_id')->constrained(
+                table: 'pacientes', indexName: 'paciente_id'
+            );
+
+            $table->string('observaciones');
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('cita_paciente');
+    }
+};
