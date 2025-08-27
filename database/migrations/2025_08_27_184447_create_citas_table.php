@@ -16,9 +16,13 @@ return new class extends Migration
 
             $table->date('fecha');
             $table->time('hora_inicio');
-            $table->time('hora_fin');
-            $table->text('motivo')->comment('dolencia, chequeo, etc.');
-            $table->text('observaciones');
+            $table->time('hora_fin')->comment('Se utiliza para ver espacios disponibles');
+            $table->text('motivo')->nullable()->comment('motivo por el cual es la cita, chequeo, etc.');
+            $table->text('observaciones')->nullable()->comment('observaciones durante la consulta');
+
+            $table->foreignId('medico_id')->constrained(
+                table: 'users', indexName: 'medico_id'
+            );
 
             $table->foreignId('cita_estatus_id')->constrained(
                 table: 'catalogo_cita_estatus', indexName: 'cita_estatus_id'
