@@ -13,22 +13,23 @@ class PatientController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Patient::all();
+        // $query = Patient::all();
 
-        if ($request->filled('search')) {
-            $search = $request->search;
+        // if ($request->filled('search')) {
+        //     $search = $request->search;
 
-            $query->where(function($q) use ($search) {
-                $q->where('numero_caso', 'like', "%{$search}%")
-                ->orWhereHas('clues', function(Builder $q2) use ($search) {
-                    $q2->where('descripcion', 'like', "%{$search}%");
-                });
-            });
-        }
+        //     $query->where(function($q) use ($search) {
+        //         $q->where('numero_caso', 'like', "%{$search}%")
+        //         ->orWhereHas('clues', function(Builder $q2) use ($search) {
+        //             $q2->where('descripcion', 'like', "%{$search}%");
+        //         });
+        //     });
+        // }
 
-        // return Chain::paginate($request->per_page ?? 10);
+        // // return Chain::paginate($request->per_page ?? 10);
 
-        return $query->paginate($request->per_page ?? 10);
+        // return $query->paginate($request->per_page ?? 10);
+        return Patient::paginate($request->per_page ?? 10);
     }
 
     /**
@@ -44,7 +45,7 @@ class PatientController extends Controller
      */
     public function show(Patient $patient)
     {
-        //
+        return $patient;
     }
 
     /**
