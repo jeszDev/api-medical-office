@@ -22,9 +22,9 @@ class Patient extends Model
         'observaciones'
     ];
 
-    public function appointment()
+    public function appointments()
     {
-        return $this->belongsToMany(Appointment::class, 'cita_paciente', 'id_paciente', 'id_cita')
+        return $this->belongsToMany(Appointment::class, 'cita_paciente', 'paciente_id', 'cita_id')
                     ->withPivot(['observaciones'])
                     ->withTimestamps();
     }

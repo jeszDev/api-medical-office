@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PatientController;
 use Illuminate\Http\Request;
@@ -15,3 +16,5 @@ Route::post('/auth/check-status', [AuthController::class, 'checkStatus'])->middl
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::apiResource('patients', PatientController::class);
+Route::apiResource('patients.apointments', AppointmentController::class)->shallow();
+
