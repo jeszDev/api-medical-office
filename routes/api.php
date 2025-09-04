@@ -16,5 +16,5 @@ Route::post('/auth/check-status', [AuthController::class, 'checkStatus'])->middl
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::apiResource('patients', PatientController::class);
-Route::apiResource('patients.apointments', AppointmentController::class)->shallow();
+Route::apiResource('patients.appointments', AppointmentController::class)->shallow();
 
