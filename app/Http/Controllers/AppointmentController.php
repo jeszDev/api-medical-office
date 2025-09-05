@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
@@ -10,9 +12,10 @@ class AppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Patient $patient)
     {
-        //
+        $appointments = $patient->appointments()->with('patients')->get();
+        return AppointmentResource::collection($appointments);
     }
 
     /**
