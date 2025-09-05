@@ -18,4 +18,9 @@ class Appointment extends Model
                     ->withPivot(['observaciones'])
                     ->withTimestamps();
     }
+
+    public function status()
+    {
+        return $this->belongsTo(CatalogAppointmentStatus::class, 'cita_estatus_id');
+    }
 }

@@ -16,13 +16,13 @@ class AppointmentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'fecha' => $this->fecha,
+            'fecha' => date('d-m-Y', strtotime($this->fecha)),
             'hora_inicio' => $this->hora_inicio,
             'hora_fin' => $this->hora_fin,
             'motivo' => $this->motivo,
             'observaciones' => $this->observaciones,
             'medico_id' => $this->medico_id,
-            'cita_estatus_id' => $this->cita_estatus_id,
+            'estatus' => $this->status->nombre,
             'pacientes' => PatientResource::collection($this->whenLoaded('patients')),
         ];
     }
