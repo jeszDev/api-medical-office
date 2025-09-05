@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,13 +20,18 @@ class PatientResource extends JsonResource
             'nombre' => $this->nombre,
             'primer_apellido' => $this->primer_apellido,
             'segundo_apellido' => $this->segundo_apellido,
-            'fecha_nacimiento' => $this->fecha_nacimiento,
+            'fecha_nacimiento' => $this->fecha_nacimiento
+                ? Carbon::parse($this->fecha_nacimiento)->format('d/m/Y')
+                : null,
             'telefono' => $this->telefono,
             'correo_electronico' => $this->correo_electronico,
             'creado_el' => date('d/m/Y', strtotime($this->created_at)),
 
             // campos calculados
             'nombre_completo' => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}"),
+            'edad' => $this->fecha_nacimiento
+                ? Carbon::parse($this->fecha_nacimiento)->age
+                : null,
             // relación
             'detalle_cita' => $this->whenPivotLoaded('cita_paciente', function () {
                 return [
