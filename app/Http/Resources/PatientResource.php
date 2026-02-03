@@ -25,6 +25,7 @@ class PatientResource extends JsonResource
                 : null,
             'telefono' => $this->telefono,
             'correo_electronico' => $this->correo_electronico,
+            'observaciones' => $this->observaciones,
             'creado_el' => date('d/m/Y', strtotime($this->created_at)),
 
             // campos calculados
