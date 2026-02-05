@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('citas', function (Blueprint $table) {
             $table->id();
 
-            $table->date('fecha');
-            $table->time('hora_inicio');
-            $table->time('hora_fin')->comment('Se utiliza para ver espacios disponibles');
+            $table->dateTime('fecha_hora_inicio');
+            $table->dateTime('fecha_hora_termino')->comment('Ayuda como bandera para ver espacios disponibles');
             $table->text('motivo')->nullable()->comment('motivo por el cual es la cita, chequeo, etc.');
-            $table->text('observaciones')->nullable()->comment('observaciones durante la consulta');
+            $table->text('observaciones_cita')->nullable()->comment('observaciones que se establecen al momento de agendar la cita');
+            $table->text('observaciones_consulta')->nullable()->comment('observaciones durante la consulta');
 
             $table->foreignId('medico_id')->constrained(
                 table: 'users', indexName: 'medico_id'
