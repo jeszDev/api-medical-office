@@ -59,7 +59,8 @@ class PatientController extends Controller
      */
     public function update(Request $request, Patient $patient)
     {
-        //
+        $patient->update($request->all());
+        return new PatientResource($patient);
     }
 
     /**
