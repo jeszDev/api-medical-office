@@ -16,14 +16,14 @@ class AppointmentFactory extends Factory
      */
     public function definition(): array
     {
-        $fecha = $this->faker->dateTimeBetween('+1 days', '+1 month');
+        $inicio = $this->faker->dateTimeBetween('+1 days', '+1 month');
+        $termino = (clone $inicio)->modify('+30 minutes');
 
         return [
-            'fecha' => $fecha->format('Y-m-d'),
-            'hora_inicio' => $fecha->format('H:i:s'),
-            'hora_fin' => $fecha->modify('+30 minutes')->format('H:i:s'),
+            'fecha_hora_inicio' => $inicio,
+            'fecha_hora_termino' => $termino,
             'motivo' => $this->faker->sentence,
-            'observaciones' => $this->faker->sentence,
+            'observaciones_cita' => $this->faker->sentence,
             'medico_id' => 1,
             'cita_estatus_id' => 1,
         ];
