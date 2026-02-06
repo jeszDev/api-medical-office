@@ -57,6 +57,10 @@ php artisan key:generate
 
 ```bash
 php artisan migrate --seed
+
+Limpiar la BD y cargar nuevamente
+
+php artisan migrate:fresh --seed
 ```
 
 ### 7. Levantar el servidor de Laravel
