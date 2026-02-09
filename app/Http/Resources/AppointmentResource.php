@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,6 +24,9 @@ class AppointmentResource extends JsonResource
             'medico_id' => $this->medico_id,
             'estatus' => $this->status->nombre,
             'pacientes' => PatientResource::collection($this->whenLoaded('patients')),
+
+            'cita_fecha' => Carbon::parse($this->fecha_hora_inicio)->format('d/m/Y'),
+            'cita_hora' => Carbon::parse($this->fecha_hora_inicio)->format('H:i')
         ];
     }
 }
