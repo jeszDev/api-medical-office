@@ -24,9 +24,14 @@ return new class extends Migration
                 table: 'users', indexName: 'medico_id'
             );
 
-            $table->foreignId('cita_estatus_id')->constrained(
-                table: 'catalogo_cita_estatus', indexName: 'cita_estatus_id'
-            );
+            // $table->foreignId('cita_estatus_id')->constrained(
+            //     table: 'catalogo_cita_estatus', indexName: 'cita_estatus_id'
+            // )->default(1);
+
+            $table->foreignId('cita_estatus_id')
+                ->default(1)
+                ->constrained(table: 'catalogo_cita_estatus');
+
 
             $table->timestamps();
         });
