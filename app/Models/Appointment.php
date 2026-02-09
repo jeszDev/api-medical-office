@@ -12,6 +12,14 @@ class Appointment extends Model
 
     protected $table = 'citas';
 
+    protected $fillable = [
+        'fecha_hora_inicio',
+        'fecha_hora_termino',
+        'motivo',
+        'observaciones_cita',
+        'medico_id',
+    ];
+
     public function patients()
     {
         return $this->belongsToMany(Patient::class, 'cita_paciente', 'cita_id', 'paciente_id')
