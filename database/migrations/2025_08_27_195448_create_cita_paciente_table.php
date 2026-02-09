@@ -21,7 +21,7 @@ return new class extends Migration
                 table: 'pacientes', indexName: 'paciente_id'
             );
 
-            $table->string('observaciones');
+            $table->string('observaciones')->nullable();
 
             $table->timestamps();
         });
