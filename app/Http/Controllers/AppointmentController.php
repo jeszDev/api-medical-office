@@ -6,6 +6,7 @@ use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
@@ -14,7 +15,7 @@ class AppointmentController extends Controller
      */
     public function index(Patient $patient)
     {
-        $appointments = $patient->appointments()->with('patients')->get();
+        $appointments = $patient->appointments()->with('patients')->orderByDesc('id')->get();
         return AppointmentResource::collection($appointments);
     }
 
@@ -23,7 +24,10 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Log::info('Quiere guardar cita', $request->all());
+
+        $appointment = Appointment::create($request->all());
+        $appointment->patients()->attach($request->patient_id);
     }
 
     /**
