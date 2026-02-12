@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\PatientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,5 +17,6 @@ Route::post('/auth/check-status', [AuthController::class, 'checkStatus'])->middl
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::apiResource('patients', PatientController::class);
-Route::apiResource('patients.appointments', AppointmentController::class)->shallow();
-
+Route::apiResource('appointments', AppointmentController::class);
+Route::apiResource('patients.appointments', PatientAppointmentController::class);
+// Route::apiResource('patients.appointments', AppointmentController::class)->shallow();
