@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
+use App\Models\CatalogAppointmentStatus;
 use App\Models\Patient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,7 +28,9 @@ class PatientAppointmentController extends Controller
         $startDate = Carbon::parse($request->fecha_hora_inicio)->format('Y-m-d H:i:s');
         $endDate = Carbon::parse($request->fecha_hora_termino)->format('Y-m-d H:i:s');
 
-        $existsDate = Appointment::where('medico_id', $request->medico_id)
+        $existsDate = Appointment::query()
+            ->where('medico_id', $request->medico_id)
+            ->where('cita_estatus_id', CatalogAppointmentStatus::PENDIENTE)
             ->where(function ($q) use ($startDate, $endDate) {
                 $q->where('fecha_hora_inicio', '<', $endDate)
                     ->where('fecha_hora_termino', '>', $startDate);
