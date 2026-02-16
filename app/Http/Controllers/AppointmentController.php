@@ -56,7 +56,9 @@ class AppointmentController extends Controller
 
         Log::info('Cancelar cita', $appointment->toArray());
 
+
         $appointment->cancel();
+        $appointment->refresh()->load('patients');
 
         return new AppointmentResource($appointment);
     }
