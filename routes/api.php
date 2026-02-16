@@ -16,7 +16,7 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/check-status', [AuthController::class, 'checkStatus'])->middleware('auth:sanctum');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::apiResource('patients', PatientController::class);
+Route::apiResource('patients', PatientController::class)->middleware('auth:sanctum');
 Route::apiResource('appointments', AppointmentController::class);
 Route::patch('appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
 
