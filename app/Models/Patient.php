@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,7 +33,14 @@ class Patient extends Model
     public function appointments()
     {
         return $this->belongsToMany(Appointment::class, 'cita_paciente', 'paciente_id', 'cita_id')
-                    ->withPivot(['observaciones'])
-                    ->withTimestamps();
+            ->withPivot(['observaciones'])
+            ->withTimestamps();
+    }
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}")
+        );
     }
 }
