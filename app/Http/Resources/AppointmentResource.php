@@ -21,12 +21,14 @@ class AppointmentResource extends JsonResource
             'fecha_hora_termino' => $this->fecha_hora_termino,
             'motivo' => $this->motivo,
             'observaciones_cita' => $this->observaciones_cita,
-            'medico_id' => $this->medico_id,
+            'medico' => $this->doctor->full_name,
             'estatus' => $this->status->nombre,
             'pacientes' => PatientResource::collection($this->whenLoaded('patients')),
 
-            'cita_fecha' => Carbon::parse($this->fecha_hora_inicio)->format('d/m/Y'),
-            'cita_hora' => Carbon::parse($this->fecha_hora_inicio)->format('H:i')
+            'fecha_inicio' => Carbon::parse($this->fecha_hora_inicio)->format('d/m/Y'),
+            'fecha_termino' => Carbon::parse($this->fecha_hora_termino)->format('d/m/Y'),
+            'hora_inicio' => Carbon::parse($this->fecha_hora_inicio)->format('H:i'),
+            'hora_termino' => Carbon::parse($this->fecha_hora_termino)->format('H:i'),
         ];
     }
 }

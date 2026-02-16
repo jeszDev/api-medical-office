@@ -29,7 +29,7 @@ class PatientResource extends JsonResource
             'creado_el' => date('d/m/Y', strtotime($this->created_at)),
 
             // campos calculados
-            'nombre_completo' => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}"),
+            'nombre_completo' => $this->full_name,
             'edad' => $this->fecha_nacimiento
                 ? Carbon::parse($this->fecha_nacimiento)->age
                 : null,
