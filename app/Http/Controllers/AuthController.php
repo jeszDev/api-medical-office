@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +27,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $user->createToken('auth_token')->plainTextToken
         ]);
     }
@@ -51,7 +52,8 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function checkStatus(Request $request) {
+    public function checkStatus(Request $request)
+    {
         $user = $request->user();
         $request->user()->currentAccessToken()->delete();
         $newToken = $user->createToken('auth_token')->plainTextToken;
