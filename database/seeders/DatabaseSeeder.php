@@ -40,11 +40,18 @@ class DatabaseSeeder extends Seeder
             // AppointmentSeeder::class,
         ]);
 
-        $user = User::factory()->create([
-            'name' => 'Jessie Josue',
+        $doctor = User::factory()->create([
+            'name' => 'Jessie',
             'email' => 'jessie@gmail.com',
             'password' => Hash::make('123123123'),
         ]);
-        $user->assignRole('doctor');
+        $doctor->assignRole('doctor');
+
+        $receptionist = User::factory()->create([
+            'name' => 'Josue',
+            'email' => 'josue@gmail.com',
+            'password' => Hash::make('123123123'),
+        ]);
+        $receptionist->assignRole('receptionist');
     }
 }
