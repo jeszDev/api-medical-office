@@ -18,12 +18,6 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Jessie Josue',
-            'email' => 'jessie@gmail.com',
-            'password' => Hash::make('123123123'),
-        ]);
-
         CatalogAppointmentStatus::factory()->create([
             'nombre' => 'Pendiente',
         ]);
@@ -41,8 +35,16 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            RolesAndPermissionsSeeder::class,
             PatientSeeder::class,
-            AppointmentSeeder::class,
+            // AppointmentSeeder::class,
         ]);
+
+        $user = User::factory()->create([
+            'name' => 'Jessie Josue',
+            'email' => 'jessie@gmail.com',
+            'password' => Hash::make('123123123'),
+        ]);
+        $user->assignRole('doctor');
     }
 }
