@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
+use App\Models\Consultation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentConsultationController extends Controller
 {
@@ -19,7 +23,15 @@ class AppointmentConsultationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Log::info('Medico guarda', $request->user()->toArray());
+        Log::info('Guardar consulta', [...$request->all(), 'medico_id' => $request->user()->id]);
+
+        DB::transaction(function () use ($request) {
+            Consultation::create([...$request->all(), 'medico_id' => $request->user()->id]);
+
+            $appointment = Appointment::find($request->cita_id);
+            $appointment->update(['cita_estatus_id' => 4]);
+        }, attempts: 3);
     }
 
     /**
