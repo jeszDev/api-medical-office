@@ -28,4 +28,4 @@ Route::apiResource('patients.appointments', PatientAppointmentController::class)
 
 Route::apiResource('consultations', ConsultationController::class);
 
-Route::apiResource('appointments.consultations', AppointmentConsultationController::class);
+Route::apiResource('appointments.consultations', AppointmentConsultationController::class)->middleware('auth:sanctum');
