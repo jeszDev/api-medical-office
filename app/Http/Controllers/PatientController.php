@@ -17,25 +17,28 @@ class PatientController extends Controller
     {
         Log::info('Request recibido', $request->all());
 
-        // $query = Patient::all();
         $query = Patient::query();
 
+        // Filtro de búsqueda
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = str_replace(' ', '%', trim($request->search));
 
-            $query->where(function($q) use ($search) {
-                $q->where('nombre', 'like', "%{$search}%")
-                /* ->orWhereHas('clues', function(Builder $q2) use ($search) {
-                    $q2->where('descripcion', 'like', "%{$search}%");
-                }) */;
+            $query->where(function ($q) use ($search) {
+                // CONCAT_WS ignora valores NULL y concatena con espacios
+                $q->whereRaw("CONCAT_WS(' ', nombre, primer_apellido, segundo_apellido) LIKE ?", ["%{$search}%"])
+                    /* ->orWhere('curp', 'LIKE', "%{$search}%") */;
             });
         }
 
-        // // return Chain::paginate($request->per_page ?? 10);
+        // Retorno sin paginación si page == 0
+        if ($request->integer('page') === 0) {
+            return PatientResource::collection($query->get());
+        }
 
-        return $query->paginate($request->per_page ?? 10);
+        // Paginación respetando los filtros aplicados
+        $perPage = $request->integer('per_page', 10);
 
-        // return Patient::paginate($request->per_page ?? 10);
+        return PatientResource::collection($query->paginate($perPage));
     }
 
     /**

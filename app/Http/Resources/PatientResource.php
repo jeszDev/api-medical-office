@@ -26,7 +26,7 @@ class PatientResource extends JsonResource
             'telefono' => $this->telefono,
             'correo_electronico' => $this->correo_electronico,
             'observaciones' => $this->observaciones,
-            'creado_el' => date('d/m/Y', strtotime($this->created_at)),
+            'creado_el' => Carbon::parse($this->created_a)->format('d/m/Y'),
 
             // campos calculados
             'nombre_completo' => $this->full_name,
