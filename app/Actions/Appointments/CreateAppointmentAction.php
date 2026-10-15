@@ -67,7 +67,20 @@ class CreateAppointmentAction
         // 3. Eager loading de relaciones para evitar problemas de N+1 queries al serializar
         $appointment->load(['doctor', 'patients', 'status']);
 
-        // 4. (Punto de extensión futuro: Disparar evento para enviar email o WhatsApp)
+        // 4. Registro de auditoría clínica con Spatie Activitylog
+        activity('citas')
+            ->performedOn($appointment)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'medico_id' => $appointment->medico_id,
+                'paciente_id' => $data['paciente_id'],
+                'fecha_hora_inicio' => $appointment->fecha_hora_inicio,
+                'fecha_hora_termino' => $appointment->fecha_hora_termino,
+                'motivo' => $appointment->motivo,
+            ])
+            ->log('Cita médica agendada');
+
+        // 5. (Punto de extensión futuro: Disparar evento para enviar email o WhatsApp)
         // event(new AppointmentScheduled($appointment));
 
         return $appointment;

@@ -42,11 +42,4 @@ class Appointment extends Model
     {
         return $this->belongsTo(CatalogAppointmentStatus::class, 'cita_estatus_id');
     }
-
-    public function cancel(): void
-    {
-        Log::info('Cancelar cita en modelo', ['id' => $this->id]);
-        $this->cita_estatus_id = CatalogAppointmentStatus::CANCELADA;
-        $this->save();
-    }
 }

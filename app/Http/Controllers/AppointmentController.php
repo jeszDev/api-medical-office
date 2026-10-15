@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Appointments\CancelAppointmentAction;
 use App\Actions\Appointments\CreateAppointmentAction;
+use App\Http\Requests\Appointments\CancelAppointmentRequest;
 use App\Http\Requests\Appointments\StoreAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
@@ -62,12 +64,18 @@ class AppointmentController extends Controller
     /**
      * Cancel the specified appointment.
      */
-    public function cancel(Appointment $appointment): AppointmentResource
-    {
+    public function cancel(
+        CancelAppointmentRequest $request,
+        Appointment $appointment,
+        CancelAppointmentAction $cancelAppointmentAction
+    ): AppointmentResource {
         $this->authorize('cancel', $appointment);
 
-        $appointment->cancel();
-        $appointment->refresh()->load(['patients', 'doctor', 'status']);
+        $appointment = $cancelAppointmentAction->execute(
+            $appointment,
+            $request->user(),
+            (string) $request->validated('motivo_cancelacion')
+        );
 
         return new AppointmentResource($appointment);
     }
