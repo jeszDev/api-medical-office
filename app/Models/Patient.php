@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Patient extends Model
 {
@@ -15,22 +17,17 @@ class Patient extends Model
     protected $table = 'pacientes';
 
     protected $fillable = [
+        'curp',
         'nombre',
         'primer_apellido',
         'segundo_apellido',
         'fecha_nacimiento',
         'telefono',
         'correo_electronico',
-        'observaciones'
+        'observaciones',
     ];
 
-
-    public function getCreatedAtAttribute($value)
-    {
-        return Carbon::parse($value)->format('d/m/Y');
-    }
-
-    public function appointments()
+    public function appointments(): BelongsToMany
     {
         return $this->belongsToMany(Appointment::class, 'cita_paciente', 'paciente_id', 'cita_id')
             ->withPivot(['observaciones'])
@@ -40,7 +37,7 @@ class Patient extends Model
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn() => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}")
+            get: fn () => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}")
         );
     }
 }

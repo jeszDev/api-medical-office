@@ -1,65 +1,73 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Actions\Appointments\CreateAppointmentAction;
+use App\Http\Requests\Appointments\StoreAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
-use App\Models\CatalogAppointmentStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AppointmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $appointments = Appointment::with('patients')->whereBetween('fecha_hora_inicio', [$request->from_date, $request->to_date])->get();
+        $this->authorize('viewAny', Appointment::class);
+
+        $appointments = Appointment::with(['patients', 'doctor', 'status'])
+            ->when($request->filled('from_date') && $request->filled('to_date'), function ($q) use ($request) {
+                $q->whereBetween('fecha_hora_inicio', [$request->from_date, $request->to_date]);
+            })
+            ->latest('id')
+            ->get();
+
         return AppointmentResource::collection($appointments);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(
+        StoreAppointmentRequest $request,
+        CreateAppointmentAction $createAppointmentAction
+    ): JsonResponse {
+        $this->authorize('create', Appointment::class);
+
+        $appointment = $createAppointmentAction->execute($request->validated());
+
+        return (new AppointmentResource($appointment))
+            ->response()
+            ->setStatusCode(201);
+    }
 
     /**
      * Display the specified resource.
      */
-    public function show(Appointment $appointment)
+    public function show(Appointment $appointment): AppointmentResource
     {
-        $appointment->load('patients');
+        $this->authorize('view', $appointment);
+
+        $appointment->load(['patients', 'doctor', 'status']);
+
         return new AppointmentResource($appointment);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cancel the specified appointment.
      */
-    public function update(Request $request, Appointment $appointment)
+    public function cancel(Appointment $appointment): AppointmentResource
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Appointment $appointment)
-    {
-        //
-    }
-
-    public function cancel(Appointment $appointment)
-    {
-        // if ($appointment->estatus === CatalogAppointmentStatus::CANCELADA) {
-        //     return response()->json(['message' => 'La cita ya está cancelada'], 422);
-        // }
-
-        Log::info('Cancelar cita', $appointment->toArray());
-
+        $this->authorize('cancel', $appointment);
 
         $appointment->cancel();
-        $appointment->refresh()->load('patients');
+        $appointment->refresh()->load(['patients', 'doctor', 'status']);
 
         return new AppointmentResource($appointment);
     }

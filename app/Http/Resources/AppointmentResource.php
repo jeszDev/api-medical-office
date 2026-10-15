@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Carbon\Carbon;
@@ -21,14 +23,16 @@ class AppointmentResource extends JsonResource
             'fecha_hora_termino' => $this->fecha_hora_termino,
             'motivo' => $this->motivo,
             'observaciones_cita' => $this->observaciones_cita,
-            'medico' => $this->doctor->full_name,
-            'estatus' => $this->status->nombre,
+            'medico_id' => $this->medico_id,
+            'medico' => $this->whenLoaded('doctor', fn () => $this->doctor?->full_name, $this->doctor?->full_name),
+            'cita_estatus_id' => $this->cita_estatus_id,
+            'estatus' => $this->whenLoaded('status', fn () => $this->status?->nombre, $this->status?->nombre),
             'pacientes' => PatientResource::collection($this->whenLoaded('patients')),
 
-            'fecha_inicio' => Carbon::parse($this->fecha_hora_inicio)->format('d/m/Y'),
-            'fecha_termino' => Carbon::parse($this->fecha_hora_termino)->format('d/m/Y'),
-            'hora_inicio' => Carbon::parse($this->fecha_hora_inicio)->format('H:i'),
-            'hora_termino' => Carbon::parse($this->fecha_hora_termino)->format('H:i'),
+            'fecha_inicio' => $this->fecha_hora_inicio ? Carbon::parse($this->fecha_hora_inicio)->format('d/m/Y') : null,
+            'fecha_termino' => $this->fecha_hora_termino ? Carbon::parse($this->fecha_hora_termino)->format('d/m/Y') : null,
+            'hora_inicio' => $this->fecha_hora_inicio ? Carbon::parse($this->fecha_hora_inicio)->format('H:i') : null,
+            'hora_termino' => $this->fecha_hora_termino ? Carbon::parse($this->fecha_hora_termino)->format('H:i') : null,
         ];
     }
 }

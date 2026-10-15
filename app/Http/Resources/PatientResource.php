@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Carbon\Carbon;
@@ -26,7 +28,9 @@ class PatientResource extends JsonResource
             'telefono' => $this->telefono,
             'correo_electronico' => $this->correo_electronico,
             'observaciones' => $this->observaciones,
-            'creado_el' => Carbon::parse($this->created_a)->format('d/m/Y'),
+            'creado_el' => $this->created_at
+                ? Carbon::parse($this->created_at)->format('d/m/Y')
+                : null,
 
             // campos calculados
             'nombre_completo' => $this->full_name,
