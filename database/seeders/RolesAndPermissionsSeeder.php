@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
@@ -37,6 +38,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'appointments.cancel',
             'appointments.confirm',
             'appointments.complete',
+
+            // Consultas Médicas
+            'consultations.view',
+            'consultations.create',
+            'consultations.update',
+            'consultations.delete',
         ];
 
         foreach ($permissions as $permission) {
@@ -74,6 +81,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
             'appointments.view',
             'appointments.complete',
+
+            'consultations.view',
+            'consultations.create',
+            'consultations.update',
         ]);
     }
 }
