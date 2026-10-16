@@ -109,7 +109,7 @@ Hola {{ $patient->nombre }}, confirmamos su cita médica con {{ $doctor?->name ?
                         Folio de Cita:
                     </td>
                     <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-family: monospace; color: #0284c7; font-weight: 700;">
-                        #{{ str_pad((string) $appointment->id, 5, '0', STR_PAD_LEFT) }}
+                        {{ $appointment->folio ?? '#' . str_pad((string) $appointment->id, 5, '0', STR_PAD_LEFT) }}
                     </td>
                 </tr>
                 <tr>

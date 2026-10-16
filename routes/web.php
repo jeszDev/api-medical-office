@@ -30,6 +30,7 @@ if (app()->environment('local', 'testing')) {
         $patient->id = 101;
 
         $appointment = new Appointment([
+            'folio' => 'CIT-2026-0001',
             'fecha_hora_inicio' => now()->addDay()->setHour(10)->setMinute(30)->setSecond(0)->toDateTimeString(),
             'fecha_hora_termino' => now()->addDay()->setHour(11)->setMinute(15)->setSecond(0)->toDateTimeString(),
             'motivo' => 'Revisión Cardiológica y Electrocardiograma',

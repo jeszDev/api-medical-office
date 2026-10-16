@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('citas', function (Blueprint $table) {
             $table->id();
 
+            $table->string('folio', 25)->unique()->comment('Folio único de identificación de la cita médica');
             $table->dateTime('fecha_hora_inicio');
             $table->dateTime('fecha_hora_termino')->comment('Ayuda como bandera para ver espacios disponibles');
             $table->text('motivo')->nullable()->comment('motivo por el cual es la cita, chequeo, etc.');
@@ -21,7 +22,8 @@ return new class extends Migration
             $table->text('observaciones_consulta')->nullable()->comment('observaciones durante la consulta');
 
             $table->foreignId('medico_id')->constrained(
-                table: 'users', indexName: 'medico_id'
+                table: 'users',
+                indexName: 'medico_id'
             );
 
             // $table->foreignId('cita_estatus_id')->constrained(
@@ -31,7 +33,6 @@ return new class extends Migration
             $table->foreignId('cita_estatus_id')
                 ->default(1)
                 ->constrained(table: 'catalogo_cita_estatus');
-
 
             $table->timestamps();
         });

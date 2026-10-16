@@ -105,6 +105,14 @@ Hola {{ $patient->nombre }}, le recordamos que mañana {{ $startDate->translated
                     </td>
                 </tr>
                 <tr>
+                    <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #64748b; font-weight: 600;">
+                        Folio de Cita:
+                    </td>
+                    <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-family: monospace; color: #0284c7; font-weight: 700;">
+                        {{ $appointment->folio ?? '#' . str_pad((string) $appointment->id, 5, '0', STR_PAD_LEFT) }}
+                    </td>
+                </tr>
+                <tr>
                     <td style="padding: 12px 18px; font-size: 13px; color: #64748b; font-weight: 600;">
                         Lugar / Consultorio:
                     </td>

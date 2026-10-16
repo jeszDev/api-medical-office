@@ -18,7 +18,9 @@ class CreateAppointmentTest extends TestCase
     use RefreshDatabase;
 
     private User $receptionist;
+
     private User $doctor;
+
     private Patient $patient;
 
     protected function setUp(): void
@@ -139,6 +141,10 @@ class CreateAppointmentTest extends TestCase
             ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::PENDIENTE)
             ->assertJsonPath('data.pacientes.0.id', $this->patient->id);
 
+        $folio = $response->json('data.folio');
+        $this->assertNotNull($folio);
+        $this->assertMatchesRegularExpression('/^CIT-\d{4}-\d{4}$/', $folio);
+
         $this->assertDatabaseHas('citas', [
             'medico_id' => $this->doctor->id,
             'motivo' => 'Consulta general',
@@ -149,5 +155,25 @@ class CreateAppointmentTest extends TestCase
             'paciente_id' => $this->patient->id,
             'observaciones' => 'Sin alergias conocidas',
         ]);
+    }
+
+    public function test_folios_are_generated_consecutively_per_year(): void
+    {
+        $appointment1 = Appointment::create([
+            'fecha_hora_inicio' => '2026-05-10 10:00:00',
+            'fecha_hora_termino' => '2026-05-10 10:30:00',
+            'medico_id' => $this->doctor->id,
+            'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
+        ]);
+
+        $appointment2 = Appointment::create([
+            'fecha_hora_inicio' => '2026-05-10 11:00:00',
+            'fecha_hora_termino' => '2026-05-10 11:30:00',
+            'medico_id' => $this->doctor->id,
+            'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
+        ]);
+
+        $this->assertSame('CIT-2026-0001', $appointment1->folio);
+        $this->assertSame('CIT-2026-0002', $appointment2->folio);
     }
 }
