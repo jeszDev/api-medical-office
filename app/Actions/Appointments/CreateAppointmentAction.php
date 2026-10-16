@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Appointments;
 
+use App\Events\Appointments\AppointmentScheduled;
 use App\Models\Appointment;
 use App\Models\CatalogAppointmentStatus;
 use Carbon\Carbon;
@@ -80,8 +81,8 @@ class CreateAppointmentAction
             ])
             ->log('Cita médica agendada');
 
-        // 5. (Punto de extensión futuro: Disparar evento para enviar email o WhatsApp)
-        // event(new AppointmentScheduled($appointment));
+        // 5. Disparar evento para enviar notificaciones (Email / WhatsApp)
+        event(new AppointmentScheduled($appointment));
 
         return $appointment;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Appointments;
 
+use App\Events\Appointments\AppointmentCancelled;
 use App\Models\Appointment;
 use App\Models\CatalogAppointmentStatus;
 use App\Models\User;
@@ -55,8 +56,8 @@ class CancelAppointmentAction
         // 4. Eager loading para evitar N+1 queries al serializar en el Resource
         $appointment->load(['doctor', 'patients', 'status']);
 
-        // 5. Punto de extensión futuro (ej. notificar al paciente por WhatsApp sobre la cancelación)
-        // event(new AppointmentCancelled($appointment, $reason));
+        // 5. Disparar evento para enviar notificaciones (Email / WhatsApp)
+        event(new AppointmentCancelled($appointment, $reason));
 
         return $appointment;
     }

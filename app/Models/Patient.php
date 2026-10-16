@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 
 class Patient extends Model
 {
     /** @use HasFactory<\Database\Factories\PatientFactory> */
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $table = 'pacientes';
 
@@ -39,5 +41,21 @@ class Patient extends Model
         return Attribute::make(
             get: fn () => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}")
         );
+    }
+
+    /**
+     * Define the destination address for mail notifications.
+     */
+    public function routeNotificationForMail(Notification $notification): ?string
+    {
+        return $this->correo_electronico;
+    }
+
+    /**
+     * Define the phone number for WhatsApp notifications.
+     */
+    public function routeNotificationForWhatsApp(Notification $notification): ?string
+    {
+        return $this->telefono;
     }
 }
