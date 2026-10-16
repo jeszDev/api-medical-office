@@ -16,15 +16,14 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Limpia cache de permisos
+        // Limpia la caché de permisos de Spatie
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         /*
         |--------------------------------------------------------------------------
-        | Permisos
+        | 1. Catálogo Completo de Permisos Atómicos
         |--------------------------------------------------------------------------
         */
-
         $permissions = [
             // Pacientes
             'patients.view',
@@ -32,12 +31,14 @@ class RolesAndPermissionsSeeder extends Seeder
             'patients.update',
             'patients.delete',
 
-            // Citas
+            // Citas Médicas
             'appointments.view',
             'appointments.create',
+            'appointments.update',
             'appointments.cancel',
             'appointments.confirm',
             'appointments.complete',
+            'appointments.delete',
 
             // Consultas Médicas
             'consultations.view',
@@ -52,19 +53,24 @@ class RolesAndPermissionsSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | Roles
+        | 2. Catálogo de Roles
         |--------------------------------------------------------------------------
         */
-
-        $receptionist = Role::firstOrCreate(['name' => 'receptionist']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);
         $doctor = Role::firstOrCreate(['name' => 'doctor']);
+        $receptionist = Role::firstOrCreate(['name' => 'receptionist']);
+        $patient = Role::firstOrCreate(['name' => 'patient']);
 
         /*
         |--------------------------------------------------------------------------
-        | Asignación de permisos
+        | 3. Asignación Coherente de Permisos por Rol
         |--------------------------------------------------------------------------
         */
 
+        // Admin: Control total de la plataforma
+        $admin->syncPermissions(Permission::all());
+
+        // Recepcionista: Operación de citas, registro de pacientes y visualización
         $receptionist->syncPermissions([
             'patients.view',
             'patients.create',
@@ -72,10 +78,14 @@ class RolesAndPermissionsSeeder extends Seeder
 
             'appointments.view',
             'appointments.create',
+            'appointments.update',
             'appointments.cancel',
             'appointments.confirm',
+
+            'consultations.view',
         ]);
 
+        // Doctor: Atención clínica de citas y consultas médicas
         $doctor->syncPermissions([
             'patients.view',
 
@@ -85,6 +95,15 @@ class RolesAndPermissionsSeeder extends Seeder
             'consultations.view',
             'consultations.create',
             'consultations.update',
+        ]);
+
+        // Paciente / Tutor: Acceso a su propio expediente y citas (filtrado por Policy)
+        $patient->syncPermissions([
+            'patients.view',
+
+            'appointments.view',
+            'appointments.create',
+            'appointments.cancel',
         ]);
     }
 }

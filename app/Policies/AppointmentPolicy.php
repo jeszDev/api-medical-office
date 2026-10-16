@@ -38,6 +38,14 @@ class AppointmentPolicy
      */
     public function update(User $user, Appointment $appointment): bool
     {
+        return $user->hasPermissionTo('appointments.update');
+    }
+
+    /**
+     * Determine whether the user can confirm the appointment.
+     */
+    public function confirm(User $user, Appointment $appointment): bool
+    {
         return $user->hasPermissionTo('appointments.confirm');
     }
 
@@ -55,5 +63,13 @@ class AppointmentPolicy
     public function complete(User $user, Appointment $appointment): bool
     {
         return $user->hasPermissionTo('appointments.complete');
+    }
+
+    /**
+     * Determine whether the user can delete the appointment.
+     */
+    public function delete(User $user, Appointment $appointment): bool
+    {
+        return $user->hasPermissionTo('appointments.delete');
     }
 }
