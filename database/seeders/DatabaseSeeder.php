@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Models\CatalogAppointmentStatus;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -18,8 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // 1. Catálogo completo de estatus de citas
         CatalogAppointmentStatus::firstOrCreate(['id' => 1], ['nombre' => 'Pendiente']);
         CatalogAppointmentStatus::firstOrCreate(['id' => 2], ['nombre' => 'Confirmada']);
         CatalogAppointmentStatus::firstOrCreate(['id' => 3], ['nombre' => 'Cancelada']);
@@ -27,24 +24,58 @@ class DatabaseSeeder extends Seeder
         CatalogAppointmentStatus::firstOrCreate(['id' => 5], ['nombre' => 'No asistió']);
         CatalogAppointmentStatus::firstOrCreate(['id' => 6], ['nombre' => 'En sala de espera']);
 
-        $this->call([
-            RolesAndPermissionsSeeder::class,
-            PatientSeeder::class,
-            // AppointmentSeeder::class,
-        ]);
+        // 2. Catálogo de roles y permisos
+        $this->call(RolesAndPermissionsSeeder::class);
 
-        $doctor = User::factory()->create([
-            'name' => 'Jessie',
-            'email' => 'jessie@gmail.com',
-            'password' => Hash::make('123123123'),
-        ]);
+        // 3. Usuarios base con credenciales estandarizadas (Contraseña: 123123123)
+        $password = Hash::make('123123123');
+
+        // Rol: Admin
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            ['name' => 'Administrador General', 'password' => $password]
+        );
+        $admin->assignRole('admin');
+
+        // Rol: Doctor (Jessie)
+        $doctor = User::firstOrCreate(
+            ['email' => 'jessie@gmail.com'],
+            ['name' => 'Dr. Jessie', 'password' => $password]
+        );
         $doctor->assignRole('doctor');
 
-        $receptionist = User::factory()->create([
-            'name' => 'Josue',
-            'email' => 'josue@gmail.com',
-            'password' => Hash::make('123123123'),
-        ]);
+        // Rol: Recepcionista (Josue)
+        $receptionist = User::firstOrCreate(
+            ['email' => 'josue@gmail.com'],
+            ['name' => 'Recepcionista Josue', 'password' => $password]
+        );
         $receptionist->assignRole('receptionist');
+
+        // Rol: Paciente / Tutor (Carlos Gómez - a cargo de su hijo y madre)
+        $carlos = User::firstOrCreate(
+            ['email' => 'carlos.tutor@gmail.com'],
+            ['name' => 'Carlos Gómez (Tutor)', 'password' => $password]
+        );
+        $carlos->assignRole('patient');
+
+        // Rol: Paciente / Madre (Ana Martínez - madre de Mateo)
+        $ana = User::firstOrCreate(
+            ['email' => 'ana.madre@gmail.com'],
+            ['name' => 'Ana Martínez (Madre)', 'password' => $password]
+        );
+        $ana->assignRole('patient');
+
+        // Rol: Paciente Adulto Independiente (Roberto Pérez)
+        $roberto = User::firstOrCreate(
+            ['email' => 'roberto.adulto@gmail.com'],
+            ['name' => 'Roberto Pérez (Paciente)', 'password' => $password]
+        );
+        $roberto->assignRole('patient');
+
+        // 4. Seeder de Pacientes y vínculos familiares
+        $this->call(PatientSeeder::class);
+
+        // 5. Seeder de Citas médicas con múltiples estatus y consultas asociadas
+        $this->call(AppointmentSeeder::class);
     }
 }
