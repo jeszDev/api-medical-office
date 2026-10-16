@@ -19,8 +19,11 @@ class CreateConsultationTest extends TestCase
     use RefreshDatabase;
 
     private User $doctor;
+
     private User $receptionist;
+
     private Patient $patient;
+
     private Appointment $appointment;
 
     protected function setUp(): void
@@ -125,6 +128,7 @@ class CreateConsultationTest extends TestCase
             'exploracion_fisica' => 'Abdomen blando, depresible, ligero dolor en epigastrio',
             'diagnostico' => 'Gastritis aguda moderada',
             'tratamiento' => 'Omeprazol 20mg cada 24 horas por 14 días',
+            'observaciones' => 'Paciente refiere mejoría previa con dieta blanda',
             'notas' => 'Cita de control en dos semanas',
             'peso' => 74.50,
             'altura' => 175.00,
@@ -138,6 +142,7 @@ class CreateConsultationTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonPath('data.diagnostico', 'Gastritis aguda moderada')
+            ->assertJsonPath('data.observaciones', 'Paciente refiere mejoría previa con dieta blanda')
             ->assertJsonPath('data.medico_id', $this->doctor->id)
             ->assertJsonPath('data.paciente_id', $this->patient->id)
             ->assertJsonPath('data.cita_id', $this->appointment->id)

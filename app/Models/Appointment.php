@@ -21,7 +21,7 @@ class Appointment extends Model
         'fecha_hora_inicio',
         'fecha_hora_termino',
         'motivo',
-        'observaciones_cita',
+        'observaciones',
         'medico_id',
         'cita_estatus_id',
     ];

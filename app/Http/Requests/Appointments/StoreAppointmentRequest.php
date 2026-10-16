@@ -29,6 +29,7 @@ class StoreAppointmentRequest extends FormRequest
             'medico_id' => ['required', 'integer', 'exists:users,id'],
             'paciente_id' => ['required', 'integer', 'exists:pacientes,id'],
             'motivo' => ['nullable', 'string', 'max:1000'],
+            'observaciones' => ['nullable', 'string', 'max:1000'],
             'observaciones_cita' => ['nullable', 'string', 'max:1000'],
             'observaciones_paciente' => ['nullable', 'string', 'max:500'],
         ];
@@ -47,6 +48,7 @@ class StoreAppointmentRequest extends FormRequest
             'medico_id' => 'médico',
             'paciente_id' => 'paciente',
             'motivo' => 'motivo de la cita',
+            'observaciones' => 'observaciones de la cita',
             'observaciones_cita' => 'observaciones de la cita',
             'observaciones_paciente' => 'observaciones del paciente',
         ];

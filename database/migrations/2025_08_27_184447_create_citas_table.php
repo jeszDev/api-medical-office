@@ -18,8 +18,7 @@ return new class extends Migration
             $table->dateTime('fecha_hora_inicio');
             $table->dateTime('fecha_hora_termino')->comment('Ayuda como bandera para ver espacios disponibles');
             $table->text('motivo')->nullable()->comment('motivo por el cual es la cita, chequeo, etc.');
-            $table->text('observaciones_cita')->nullable()->comment('observaciones que se establecen al momento de agendar la cita');
-            $table->text('observaciones_consulta')->nullable()->comment('observaciones durante la consulta');
+            $table->text('observaciones')->nullable()->comment('observaciones que se establecen al momento de agendar la cita');
 
             $table->foreignId('medico_id')->constrained(
                 table: 'users',

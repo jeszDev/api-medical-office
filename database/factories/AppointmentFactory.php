@@ -23,7 +23,7 @@ class AppointmentFactory extends Factory
             'fecha_hora_inicio' => $inicio,
             'fecha_hora_termino' => $termino,
             'motivo' => $this->faker->sentence,
-            'observaciones_cita' => $this->faker->sentence,
+            'observaciones' => $this->faker->sentence,
             'medico_id' => 1,
             'cita_estatus_id' => 1,
         ];

@@ -17,6 +17,7 @@ class CreateAppointmentAction
      * Ejecuta el proceso de negocio para crear una cita médica.
      *
      * @param  array<string, mixed>  $data
+     *
      * @throws ValidationException
      */
     public function execute(array $data): Appointment
@@ -50,13 +51,13 @@ class CreateAppointmentAction
                 'fecha_hora_inicio' => $data['fecha_hora_inicio'],
                 'fecha_hora_termino' => $data['fecha_hora_termino'],
                 'motivo' => $data['motivo'] ?? null,
-                'observaciones_cita' => $data['observaciones_cita'] ?? null,
+                'observaciones' => $data['observaciones'] ?? $data['observaciones_cita'] ?? null,
                 'medico_id' => $data['medico_id'],
                 'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
             ]);
 
             $pivotAttributes = [];
-            if (!empty($data['observaciones_paciente'])) {
+            if (! empty($data['observaciones_paciente'])) {
                 $pivotAttributes['observaciones'] = $data['observaciones_paciente'];
             }
 

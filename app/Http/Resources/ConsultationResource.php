@@ -23,6 +23,7 @@ class ConsultationResource extends JsonResource
             'exploracion_fisica' => $this->exploracion_fisica,
             'diagnostico' => $this->diagnostico,
             'tratamiento' => $this->tratamiento,
+            'observaciones' => $this->observaciones,
             'notas' => $this->notas,
 
             'signos_vitales' => [

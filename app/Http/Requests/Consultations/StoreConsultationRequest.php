@@ -30,6 +30,7 @@ class StoreConsultationRequest extends FormRequest
             'exploracion_fisica' => ['nullable', 'string'],
             'diagnostico' => ['required', 'string', 'max:2000'],
             'tratamiento' => ['nullable', 'string'],
+            'observaciones' => ['nullable', 'string'],
             'notas' => ['nullable', 'string'],
 
             // Signos vitales
@@ -56,6 +57,7 @@ class StoreConsultationRequest extends FormRequest
             'exploracion_fisica' => 'exploración física',
             'diagnostico' => 'diagnóstico',
             'tratamiento' => 'tratamiento',
+            'observaciones' => 'observaciones',
             'notas' => 'notas clínicas',
             'peso' => 'peso',
             'altura' => 'altura',

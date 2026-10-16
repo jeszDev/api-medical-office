@@ -20,6 +20,7 @@ class Consultation extends Model
         'exploracion_fisica',
         'diagnostico',
         'tratamiento',
+        'observaciones',
         'notas',
         'peso',
         'altura',

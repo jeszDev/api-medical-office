@@ -23,7 +23,7 @@ class AppointmentResource extends JsonResource
             'fecha_hora_inicio' => $this->fecha_hora_inicio,
             'fecha_hora_termino' => $this->fecha_hora_termino,
             'motivo' => $this->motivo,
-            'observaciones_cita' => $this->observaciones_cita,
+            'observaciones' => $this->observaciones,
             'medico_id' => $this->medico_id,
             'medico' => $this->whenLoaded('doctor', fn () => $this->doctor?->full_name, $this->doctor?->full_name),
             'cita_estatus_id' => $this->cita_estatus_id,

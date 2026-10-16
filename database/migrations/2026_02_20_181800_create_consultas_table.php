@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('exploracion_fisica')->nullable();
             $table->text('diagnostico')->nullable();
             $table->text('tratamiento')->nullable();
+            $table->text('observaciones')->nullable();
             $table->text('notas')->nullable();
 
             // Signos vitales
@@ -32,7 +33,6 @@ return new class extends Migration
             $table->foreignId('cita_id')->nullable()->constrained('citas')->cascadeOnDelete();
             $table->foreignId('paciente_id')->constrained('pacientes')->cascadeOnDelete();
             $table->foreignId('medico_id')->constrained('users');
-
 
             $table->timestamps();
         });
