@@ -157,6 +157,11 @@ class CreateAppointmentTest extends TestCase
             'paciente_id' => $this->patient->id,
             'observaciones' => 'Sin alergias conocidas',
         ]);
+
+        $this->assertDatabaseHas('activity_log', [
+            'log_name' => 'citas',
+            'description' => 'Cita médica agendada',
+        ]);
     }
 
     public function test_folios_are_generated_consecutively_per_year(): void

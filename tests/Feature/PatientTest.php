@@ -1,0 +1,186 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature;
+
+use App\Models\Patient;
+use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
+use Spatie\Activitylog\Models\Activity;
+use Tests\TestCase;
+
+class PatientTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private User $receptionist;
+    private User $userWithoutPermissions;
+    private Patient $patient;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RolesAndPermissionsSeeder::class);
+
+        $this->receptionist = User::factory()->create(['name' => 'Recepcionista Maria']);
+        $this->receptionist->assignRole('receptionist'); // Tiene patients.view, patients.create, patients.update
+
+        $this->userWithoutPermissions = User::factory()->create(['name' => 'Usuario Sin Roles']);
+
+        $this->patient = Patient::create([
+            'nombre' => 'Roberto',
+            'primer_apellido' => 'Gómez',
+            'segundo_apellido' => 'Bolaños',
+            'curp' => 'GOMR800101HDFR0001',
+            'fecha_nacimiento' => '1980-01-01',
+            'telefono' => '5551122334',
+            'correo_electronico' => 'roberto.gomez@example.com',
+            'observaciones' => 'Sin alergias',
+        ]);
+    }
+
+    public function test_unauthenticated_user_cannot_access_patients(): void
+    {
+        $response = $this->getJson('/api/patients');
+        $response->assertStatus(401);
+    }
+
+    public function test_user_without_permission_cannot_access_patients(): void
+    {
+        Sanctum::actingAs($this->userWithoutPermissions);
+
+        $response = $this->getJson('/api/patients');
+        $response->assertStatus(403);
+    }
+
+    public function test_user_with_permission_can_list_and_search_patients(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        // Crear un segundo paciente para probar búsqueda
+        Patient::create([
+            'nombre' => 'Elena',
+            'primer_apellido' => 'Torres',
+            'curp' => 'TORE850202MDFR0002',
+        ]);
+
+        $response = $this->getJson('/api/patients?search=Roberto Gómez');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.nombre', 'Roberto')
+            ->assertJsonPath('data.0.primer_apellido', 'Gómez');
+    }
+
+    public function test_user_can_list_all_patients_without_pagination_when_page_is_zero(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        $response = $this->getJson('/api/patients?page=0');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['data' => [['id', 'nombre', 'primer_apellido']]]);
+    }
+
+    public function test_store_patient_validation_fails_on_empty_data(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        $response = $this->postJson('/api/patients', []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['nombre', 'primer_apellido']);
+    }
+
+    public function test_store_patient_successfully(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        $payload = [
+            'nombre' => 'Lucía',
+            'primer_apellido' => 'Méndez',
+            'segundo_apellido' => 'Castro',
+            'curp' => 'MENL900505MDFR0003',
+            'fecha_nacimiento' => '1990-05-05',
+            'telefono' => '5559988776',
+            'correo_electronico' => 'lucia.mendez@example.com',
+            'observaciones' => 'Hipertensión controlada',
+        ];
+
+        $response = $this->postJson('/api/patients', $payload);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.nombre', 'Lucía')
+            ->assertJsonPath('data.primer_apellido', 'Méndez')
+            ->assertJsonPath('data.nombre_completo', 'Lucía Méndez Castro');
+
+        $this->assertDatabaseHas('pacientes', [
+            'curp' => 'MENL900505MDFR0003',
+            'nombre' => 'Lucía',
+        ]);
+
+        $latestActivity = Activity::where('log_name', 'pacientes')->latest()->first();
+        $this->assertNotNull($latestActivity);
+        $this->assertEquals('Paciente registrado', $latestActivity->description);
+    }
+
+    public function test_show_patient_returns_resource(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        $response = $this->getJson("/api/patients/{$this->patient->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.id', $this->patient->id)
+            ->assertJsonPath('data.nombre', 'Roberto');
+    }
+
+    public function test_update_patient_successfully(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        $response = $this->putJson("/api/patients/{$this->patient->id}", [
+            'nombre' => 'Roberto Carlos',
+            'primer_apellido' => 'Gómez',
+            'telefono' => '5550001111',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.nombre', 'Roberto Carlos')
+            ->assertJsonPath('data.telefono', '5550001111');
+
+        $this->assertDatabaseHas('pacientes', [
+            'id' => $this->patient->id,
+            'nombre' => 'Roberto Carlos',
+            'telefono' => '5550001111',
+        ]);
+
+        $latestActivity = Activity::where('log_name', 'pacientes')->latest()->first();
+        $this->assertNotNull($latestActivity);
+        $this->assertEquals('Paciente actualizado', $latestActivity->description);
+    }
+
+    public function test_destroy_patient_successfully(): void
+    {
+        // En el seeder, el rol admin o permiso patients.delete
+        // Asignemos el permiso patients.delete a la recepcionista para este test
+        $this->receptionist->givePermissionTo('patients.delete');
+        Sanctum::actingAs($this->receptionist);
+
+        $response = $this->deleteJson("/api/patients/{$this->patient->id}");
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('pacientes', [
+            'id' => $this->patient->id,
+        ]);
+
+        $latestActivity = Activity::where('log_name', 'pacientes')->latest()->first();
+        $this->assertNotNull($latestActivity);
+        $this->assertEquals('Paciente eliminado', $latestActivity->description);
+    }
+}

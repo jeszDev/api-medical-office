@@ -1,84 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function __construct(
+        private readonly AuthService $authService
+    ) {}
+
+    public function login(LoginRequest $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            throw ValidationException::withMessages([
-                'email' => ['Las credenciales proporcionadas son incorrectas.'],
-            ]);
-        }
-
-        $user = User::where('email', $request->email)->first();
+        $result = $this->authService->login($request->validated());
 
         return response()->json([
-            'user' => new UserResource($user),
-            'token' => $user->createToken('auth_token')->plainTextToken
-        ]);
+            'user' => new UserResource($result['user']),
+            'token' => $result['token'],
+        ], 200);
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $result = $this->authService->register($request->validated());
 
         return response()->json([
-            'user' => $user,
-            'token' => $user->createToken('auth_token')->plainTextToken
+            'user' => new UserResource($result['user']),
+            'token' => $result['token'],
         ], 201);
     }
 
-    public function checkStatus(Request $request)
+    public function checkStatus(Request $request): JsonResponse
     {
+        /** @var User $user */
         $user = $request->user();
-        $request->user()->currentAccessToken()->delete();
-        $newToken = $user->createToken('auth_token')->plainTextToken;
+        $token = $this->authService->refreshToken($user);
 
         return response()->json([
             'user' => new UserResource($user),
-            'token' => $newToken
-        ]);
+            'token' => $token,
+        ], 200);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
-        try {
-            $request->user()->currentAccessToken()->delete();
+        /** @var User $user */
+        $user = $request->user();
+        $this->authService->logout($user);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Sesión cerrada correctamente',
-            ]);   //code...
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al cerrar sesión',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesión cerrada correctamente',
+        ], 200);
     }
 }
