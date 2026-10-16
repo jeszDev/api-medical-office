@@ -100,6 +100,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Paciente / Tutor: Acceso a su propio expediente y citas (filtrado por Policy)
         $patient->syncPermissions([
             'patients.view',
+            'patients.create',
 
             'appointments.view',
             'appointments.create',

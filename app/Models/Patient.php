@@ -36,6 +36,16 @@ class Patient extends Model
             ->withTimestamps();
     }
 
+    /**
+     * Usuarios responsables, tutores o titulares con acceso a este expediente.
+     */
+    public function guardians(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'paciente_usuario', 'paciente_id', 'user_id')
+            ->withPivot(['relacion', 'es_contacto_principal'])
+            ->withTimestamps();
+    }
+
     protected function fullName(): Attribute
     {
         return Attribute::make(

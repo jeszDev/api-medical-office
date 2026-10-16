@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\RelationshipType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -37,10 +38,22 @@ class PatientResource extends JsonResource
             'edad' => $this->fecha_nacimiento
                 ? Carbon::parse($this->fecha_nacimiento)->age
                 : null,
-            // relación
+
+            // relación con cita (tabla pivote cita_paciente)
             'detalle_cita' => $this->whenPivotLoaded('cita_paciente', function () {
                 return [
                     'observaciones' => $this->pivot->observaciones,
+                ];
+            }),
+
+            // relación con tutor o cuenta familiar (tabla pivote paciente_usuario)
+            'vinculo_familiar' => $this->whenPivotLoaded('paciente_usuario', function () {
+                $type = RelationshipType::tryFrom((string) $this->pivot->relacion);
+
+                return [
+                    'relacion' => $this->pivot->relacion,
+                    'relacion_texto' => $type?->label() ?? $this->pivot->relacion,
+                    'es_contacto_principal' => (bool) $this->pivot->es_contacto_principal,
                 ];
             }),
         ];
