@@ -26,6 +26,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'cedula_profesional',
+        'cedula_especialidad',
+        'especialidad',
+        'institucion_egreso',
+        'telefono_consultorio',
+        'firma_digital_path',
     ];
 
     /**

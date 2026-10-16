@@ -20,6 +20,11 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'cedula_profesional' => $this->cedula_profesional,
+            'cedula_especialidad' => $this->cedula_especialidad,
+            'especialidad' => $this->especialidad,
+            'institucion_egreso' => $this->institucion_egreso,
+            'telefono_consultorio' => $this->telefono_consultorio,
             'roles' => $this->getRoleNames(),
             'permissions' => $this->getAllPermissions()->pluck('name'),
         ];

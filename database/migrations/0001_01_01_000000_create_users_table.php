@@ -17,6 +17,15 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Campos profesionales médicos
+            $table->string('cedula_profesional', 50)->nullable()->comment('Cédula profesional de médico general');
+            $table->string('cedula_especialidad', 50)->nullable()->comment('Cédula de especialidad médica si aplica');
+            $table->string('especialidad', 100)->nullable()->comment('Especialidad médica (ej. Pediatría, Medicina Interna)');
+            $table->string('institucion_egreso', 150)->nullable()->comment('Universidad o institución de egreso');
+            $table->string('telefono_consultorio', 30)->nullable()->comment('Teléfono de atención médica o consultorio');
+            $table->string('firma_digital_path', 255)->nullable()->comment('Ruta relativa de la imagen de firma digitalizada');
+
             $table->rememberToken();
             $table->timestamps();
         });

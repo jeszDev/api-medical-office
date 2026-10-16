@@ -34,6 +34,11 @@ return new class extends Migration
             $table->foreignId('paciente_id')->constrained('pacientes')->cascadeOnDelete();
             $table->foreignId('medico_id')->constrained('users');
 
+            // Control y trazabilidad de receta médica
+            $table->string('folio_receta', 30)->nullable()->unique()->comment('Folio único consecutivo anual de la receta');
+            $table->string('receta_pdf_path', 255)->nullable()->comment('Ruta del PDF de la receta en el storage');
+            $table->timestamp('receta_generada_el')->nullable()->comment('Fecha y hora en que se emitió la receta');
+
             $table->timestamps();
         });
     }

@@ -44,6 +44,13 @@ class ConsultationResource extends JsonResource
             'cita_id' => $this->cita_id,
             'cita' => new AppointmentResource($this->whenLoaded('appointment')),
 
+            'receta' => [
+                'folio' => $this->folio_receta,
+                'generada' => ! empty($this->receta_pdf_path),
+                'generada_el' => $this->receta_generada_el ? Carbon::parse($this->receta_generada_el)->format('d/m/Y H:i') : null,
+                'url' => ! empty($this->receta_pdf_path) ? url("/api/consultations/{$this->id}/prescription") : null,
+            ],
+
             'creado_el' => $this->created_at ? Carbon::parse($this->created_at)->format('d/m/Y H:i') : null,
         ];
     }

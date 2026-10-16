@@ -40,7 +40,15 @@ class DatabaseSeeder extends Seeder
         // Rol: Doctor (Jessie)
         $doctor = User::firstOrCreate(
             ['email' => 'jessie@gmail.com'],
-            ['name' => 'Dr. Jessie', 'password' => $password]
+            [
+                'name' => 'Dr. Jessie',
+                'password' => $password,
+                'cedula_profesional' => '12345678',
+                'cedula_especialidad' => '87654321',
+                'especialidad' => 'Pediatría',
+                'institucion_egreso' => 'Universidad Nacional Autónoma de México',
+                'telefono_consultorio' => '555-987-6543',
+            ]
         );
         $doctor->assignRole('doctor');
 

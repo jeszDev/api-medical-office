@@ -31,6 +31,9 @@ class Consultation extends Model
         'cita_id',
         'paciente_id',
         'medico_id',
+        'folio_receta',
+        'receta_pdf_path',
+        'receta_generada_el',
     ];
 
     /**
@@ -46,7 +49,36 @@ class Consultation extends Model
             'temperatura' => 'decimal:2',
             'frecuencia_cardiaca' => 'integer',
             'frecuencia_respiratoria' => 'integer',
+            'receta_generada_el' => 'datetime',
         ];
+    }
+
+    /**
+     * Genera un folio consecutivo anual para recetas médicas en formato REC-YYYY-0001.
+     */
+    public static function generateUniquePrescriptionFolio(?string $year = null): string
+    {
+        $year = $year ?? date('Y');
+        $prefix = "REC-{$year}-";
+
+        $lastConsultation = self::where('folio_receta', 'like', "{$prefix}%")
+            ->orderByDesc('id')
+            ->first();
+
+        if ($lastConsultation && preg_match('/^REC-\d{4}-(\d+)$/', (string) $lastConsultation->folio_receta, $matches)) {
+            $nextSequence = ((int) $matches[1]) + 1;
+        } else {
+            $nextSequence = 1;
+        }
+
+        $candidate = sprintf('%s%04d', $prefix, $nextSequence);
+
+        while (self::where('folio_receta', $candidate)->exists()) {
+            $nextSequence++;
+            $candidate = sprintf('%s%04d', $prefix, $nextSequence);
+        }
+
+        return $candidate;
     }
 
     public function patient(): BelongsTo
