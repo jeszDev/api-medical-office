@@ -31,8 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('patients/{patient}/guardians', [PatientGuardianController::class, 'index'])->name('patients.guardians.index');
     Route::post('patients/{patient}/guardians', [PatientGuardianController::class, 'store'])->name('patients.guardians.store');
 
-    Route::apiResource('appointments', AppointmentController::class);
+    Route::post('appointments/request', [AppointmentController::class, 'requestAppointment'])->name('appointments.request');
+    Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
     Route::patch('appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::apiResource('appointments', AppointmentController::class);
 
     Route::apiResource('patients.appointments', PatientAppointmentController::class);
 

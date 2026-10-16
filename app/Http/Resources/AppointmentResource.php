@@ -22,6 +22,8 @@ class AppointmentResource extends JsonResource
             'folio' => $this->folio,
             'fecha_hora_inicio' => $this->fecha_hora_inicio,
             'fecha_hora_termino' => $this->fecha_hora_termino,
+            'fecha_preferida' => $this->fecha_preferida ? Carbon::parse($this->fecha_preferida)->format('d/m/Y') : null,
+            'turno_preferido' => $this->turno_preferido,
             'motivo' => $this->motivo,
             'observaciones' => $this->observaciones,
             'medico_id' => $this->medico_id,

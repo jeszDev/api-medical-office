@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
 
             $table->string('folio', 25)->unique()->comment('Folio único de identificación de la cita médica');
-            $table->dateTime('fecha_hora_inicio');
-            $table->dateTime('fecha_hora_termino')->comment('Ayuda como bandera para ver espacios disponibles');
+            $table->dateTime('fecha_hora_inicio')->nullable()->comment('Fecha y hora de inicio de la cita');
+            $table->dateTime('fecha_hora_termino')->nullable()->comment('Fecha y hora de término de la cita');
+            $table->date('fecha_preferida')->nullable()->comment('Fecha sugerida o solicitada por el paciente');
+            $table->string('turno_preferido', 30)->nullable()->comment('Turno preferido: manana, tarde, indistinto');
             $table->text('motivo')->nullable()->comment('motivo por el cual es la cita, chequeo, etc.');
             $table->text('observaciones')->nullable()->comment('observaciones que se establecen al momento de agendar la cita');
 

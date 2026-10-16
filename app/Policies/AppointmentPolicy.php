@@ -22,7 +22,22 @@ class AppointmentPolicy
      */
     public function view(User $user, Appointment $appointment): bool
     {
-        return $user->hasPermissionTo('appointments.view');
+        if ($user->hasAnyRole(['admin', 'receptionist'])) {
+            return $user->hasPermissionTo('appointments.view');
+        }
+
+        if ($user->hasRole('doctor')) {
+            return $user->hasPermissionTo('appointments.view') && $appointment->medico_id === $user->id;
+        }
+
+        if ($user->hasRole('patient')) {
+            return $user->hasPermissionTo('appointments.view')
+                && $appointment->patients()
+                    ->whereIn('pacientes.id', $user->patients()->pluck('pacientes.id'))
+                    ->exists();
+        }
+
+        return false;
     }
 
     /**
@@ -42,6 +57,22 @@ class AppointmentPolicy
     }
 
     /**
+     * Determine whether the user can register check-in (waiting room) for the appointment.
+     */
+    public function checkIn(User $user, Appointment $appointment): bool
+    {
+        return $user->hasPermissionTo('appointments.update');
+    }
+
+    /**
+     * Determine whether the user can mark the appointment as no-show.
+     */
+    public function noShow(User $user, Appointment $appointment): bool
+    {
+        return $user->hasPermissionTo('appointments.update');
+    }
+
+    /**
      * Determine whether the user can confirm the appointment.
      */
     public function confirm(User $user, Appointment $appointment): bool
@@ -54,7 +85,18 @@ class AppointmentPolicy
      */
     public function cancel(User $user, Appointment $appointment): bool
     {
-        return $user->hasPermissionTo('appointments.cancel');
+        if ($user->hasAnyRole(['admin', 'receptionist'])) {
+            return $user->hasPermissionTo('appointments.cancel');
+        }
+
+        if ($user->hasRole('patient')) {
+            return $user->hasPermissionTo('appointments.cancel')
+                && $appointment->patients()
+                    ->whereIn('pacientes.id', $user->patients()->pluck('pacientes.id'))
+                    ->exists();
+        }
+
+        return false;
     }
 
     /**

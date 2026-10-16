@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Appointments\CancelAppointmentAction;
+use App\Actions\Appointments\ConfirmAppointmentAction;
 use App\Actions\Appointments\CreateAppointmentAction;
+use App\Actions\Appointments\RequestAppointmentAction;
 use App\Http\Requests\Appointments\CancelAppointmentRequest;
+use App\Http\Requests\Appointments\ConfirmAppointmentRequest;
+use App\Http\Requests\Appointments\RequestAppointmentRequest;
 use App\Http\Requests\Appointments\StoreAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
@@ -23,9 +27,22 @@ class AppointmentController extends Controller
     {
         $this->authorize('viewAny', Appointment::class);
 
-        $appointments = Appointment::with(['patients', 'doctor', 'status'])
+        $user = $request->user();
+        $query = Appointment::with(['patients', 'doctor', 'status']);
+
+        if ($user->hasRole('patient')) {
+            $patientIds = $user->patients()->pluck('pacientes.id');
+            $query->whereHas('patients', fn ($q) => $q->whereIn('pacientes.id', $patientIds));
+        } elseif ($user->hasRole('doctor')) {
+            $query->where('medico_id', $user->id);
+        }
+
+        $appointments = $query
             ->when($request->filled('from_date') && $request->filled('to_date'), function ($q) use ($request) {
                 $q->whereBetween('fecha_hora_inicio', [$request->from_date, $request->to_date]);
+            })
+            ->when($request->filled('status'), function ($q) use ($request) {
+                $q->where('cita_estatus_id', $request->integer('status'));
             })
             ->latest('id')
             ->get();
@@ -57,6 +74,41 @@ class AppointmentController extends Controller
         $this->authorize('view', $appointment);
 
         $appointment->load(['patients', 'doctor', 'status']);
+
+        return new AppointmentResource($appointment);
+    }
+
+    /**
+     * Solicitud de cita médica por parte de paciente o tutor.
+     */
+    public function requestAppointment(
+        RequestAppointmentRequest $request,
+        RequestAppointmentAction $requestAppointmentAction
+    ): JsonResponse {
+        $this->authorize('create', Appointment::class);
+
+        $appointment = $requestAppointmentAction->execute($request->user(), $request->validated());
+
+        return (new AppointmentResource($appointment))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    /**
+     * Confirmación de cita médica con asignación definitiva de horario por parte del personal.
+     */
+    public function confirm(
+        ConfirmAppointmentRequest $request,
+        Appointment $appointment,
+        ConfirmAppointmentAction $confirmAppointmentAction
+    ): AppointmentResource {
+        $this->authorize('confirm', $appointment);
+
+        $appointment = $confirmAppointmentAction->execute(
+            $appointment,
+            $request->validated(),
+            $request->user()
+        );
 
         return new AppointmentResource($appointment);
     }

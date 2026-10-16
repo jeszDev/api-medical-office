@@ -20,6 +20,8 @@ class Appointment extends Model
         'folio',
         'fecha_hora_inicio',
         'fecha_hora_termino',
+        'fecha_preferida',
+        'turno_preferido',
         'motivo',
         'observaciones',
         'medico_id',
