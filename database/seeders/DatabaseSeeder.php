@@ -20,21 +20,12 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        CatalogAppointmentStatus::factory()->create([
-            'nombre' => 'Pendiente',
-        ]);
-        CatalogAppointmentStatus::factory()->create([
-            'nombre' => 'Confirmada',
-        ]);
-        CatalogAppointmentStatus::factory()->create([
-            'nombre' => 'Cancelada',
-        ]);
-        CatalogAppointmentStatus::factory()->create([
-            'nombre' => 'Atendida',
-        ]);
-        CatalogAppointmentStatus::factory()->create([
-            'nombre' => 'No asistió',
-        ]);
+        CatalogAppointmentStatus::firstOrCreate(['id' => 1], ['nombre' => 'Pendiente']);
+        CatalogAppointmentStatus::firstOrCreate(['id' => 2], ['nombre' => 'Confirmada']);
+        CatalogAppointmentStatus::firstOrCreate(['id' => 3], ['nombre' => 'Cancelada']);
+        CatalogAppointmentStatus::firstOrCreate(['id' => 4], ['nombre' => 'Atendida']);
+        CatalogAppointmentStatus::firstOrCreate(['id' => 5], ['nombre' => 'No asistió']);
+        CatalogAppointmentStatus::firstOrCreate(['id' => 6], ['nombre' => 'En sala de espera']);
 
         $this->call([
             RolesAndPermissionsSeeder::class,

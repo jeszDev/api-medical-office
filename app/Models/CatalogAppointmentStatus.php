@@ -21,6 +21,8 @@ class CatalogAppointmentStatus extends Model
     public const CONFIRMADA = 2;
     public const CANCELADA = 3;
     public const ATENDIDA = 4;
+    public const NO_ASISTIO = 5;
+    public const EN_SALA_DE_ESPERA = 6;
 
     public function appointments(): HasMany
     {

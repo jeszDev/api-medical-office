@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Appointments\CancelAppointmentAction;
+use App\Actions\Appointments\CheckInAppointmentAction;
 use App\Actions\Appointments\ConfirmAppointmentAction;
 use App\Actions\Appointments\CreateAppointmentAction;
+use App\Actions\Appointments\NoShowAppointmentAction;
 use App\Actions\Appointments\RequestAppointmentAction;
 use App\Http\Requests\Appointments\CancelAppointmentRequest;
 use App\Http\Requests\Appointments\ConfirmAppointmentRequest;
@@ -109,6 +111,36 @@ class AppointmentController extends Controller
             $request->validated(),
             $request->user()
         );
+
+        return new AppointmentResource($appointment);
+    }
+
+    /**
+     * Registro de llegada a la clínica y pase a sala de espera (Check-in presencial).
+     */
+    public function checkIn(
+        Appointment $appointment,
+        CheckInAppointmentAction $checkInAppointmentAction,
+        Request $request
+    ): AppointmentResource {
+        $this->authorize('checkIn', $appointment);
+
+        $appointment = $checkInAppointmentAction->execute($appointment, $request->user());
+
+        return new AppointmentResource($appointment);
+    }
+
+    /**
+     * Registro de inasistencia a la cita (No asistió).
+     */
+    public function noShow(
+        Appointment $appointment,
+        NoShowAppointmentAction $noShowAppointmentAction,
+        Request $request
+    ): AppointmentResource {
+        $this->authorize('noShow', $appointment);
+
+        $appointment = $noShowAppointmentAction->execute($appointment, $request->user());
 
         return new AppointmentResource($appointment);
     }

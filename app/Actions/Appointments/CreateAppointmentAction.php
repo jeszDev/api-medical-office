@@ -32,6 +32,7 @@ class CreateAppointmentAction
             ->whereIn('cita_estatus_id', [
                 CatalogAppointmentStatus::PENDIENTE,
                 CatalogAppointmentStatus::CONFIRMADA,
+                CatalogAppointmentStatus::EN_SALA_DE_ESPERA,
             ])
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->where('fecha_hora_inicio', '<', $endDate)
