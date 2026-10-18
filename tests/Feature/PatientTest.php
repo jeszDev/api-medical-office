@@ -231,6 +231,12 @@ class PatientTest extends TestCase
             ->assertJsonCount(2, 'data')
             ->assertJsonMissingExact(['meta']);
 
+        // 2.2 Verificar búsqueda de consultas por motivo o diagnóstico
+        $searchConsultationsResponse = $this->getJson("/api/patients/{$this->patient->id}/consultations?search=Cefalea");
+        $searchConsultationsResponse->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $directConsultation->id);
+
         // 3. Verificar creación de consulta directa sin cita
         Sanctum::actingAs($doctor);
         $doctor->givePermissionTo('consultations.create');

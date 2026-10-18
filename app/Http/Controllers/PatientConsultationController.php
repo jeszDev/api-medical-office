@@ -24,8 +24,16 @@ class PatientConsultationController extends Controller
         $this->authorize('viewAny', Consultation::class);
 
         $query = $patient->consultations()
-            ->with(['doctor', 'appointment'])
+            ->with(['doctor', 'appointment.status'])
             ->latest('id');
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('motivo', 'like', "%{$search}%")
+                    ->orWhere('diagnostico', 'like', "%{$search}%");
+            });
+        }
 
         $all = ($request->has('page') && $request->integer('page') === 0) || $request->boolean('all');
         $perPage = $request->integer('per_page', 10);
