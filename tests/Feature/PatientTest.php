@@ -78,19 +78,27 @@ class PatientTest extends TestCase
         $response = $this->getJson('/api/patients?search=Roberto Gómez');
 
         $response->assertStatus(200)
+            ->assertJsonStructure(['data', 'links', 'meta'])
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.nombre', 'Roberto')
             ->assertJsonPath('data.0.primer_apellido', 'Gómez');
     }
 
-    public function test_user_can_list_all_patients_without_pagination_when_page_is_zero(): void
+    public function test_user_can_list_all_patients_without_pagination_when_requested(): void
     {
         Sanctum::actingAs($this->receptionist);
 
-        $response = $this->getJson('/api/patients?page=0');
+        // 1. Usando ?page=0
+        $responsePageZero = $this->getJson('/api/patients?page=0');
+        $responsePageZero->assertStatus(200)
+            ->assertJsonStructure(['data' => [['id', 'nombre', 'primer_apellido']]])
+            ->assertJsonMissingExact(['meta']);
 
-        $response->assertStatus(200)
-            ->assertJsonStructure(['data' => [['id', 'nombre', 'primer_apellido']]]);
+        // 2. Usando ?all=true
+        $responseAllTrue = $this->getJson('/api/patients?all=true');
+        $responseAllTrue->assertStatus(200)
+            ->assertJsonStructure(['data' => [['id', 'nombre', 'primer_apellido']]])
+            ->assertJsonMissingExact(['meta']);
     }
 
     public function test_store_patient_validation_fails_on_empty_data(): void
