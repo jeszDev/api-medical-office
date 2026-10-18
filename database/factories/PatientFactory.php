@@ -18,6 +18,7 @@ class PatientFactory extends Factory
     public function definition(): array
     {
         return [
+            'curp' => $this->faker->optional(0.8)->regexify('[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9]{2}'),
             'nombre' => $this->faker->firstName(),
             'primer_apellido' => $this->faker->lastName(),
             'segundo_apellido' => $this->faker->optional(0.7)->lastName(),
@@ -36,6 +37,7 @@ class PatientFactory extends Factory
     public function completo(): static
     {
         return $this->state(fn (array $attributes) => [
+            'curp' => $this->faker->regexify('[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9]{2}'),
             'segundo_apellido' => $this->faker->lastName(),
             'fecha_nacimiento' => $this->faker->dateTimeBetween('-80 years', '-18 years')->format('Y-m-d'),
             'telefono' => $this->faker->phoneNumber(),

@@ -38,10 +38,10 @@ class AppointmentNotificationTest extends TestCase
 
         $this->seed(RolesAndPermissionsSeeder::class);
 
-        $this->doctor = User::factory()->create(['name' => 'Dr. Fernando Valenzuela']);
+        $this->doctor = User::factory()->create(['nombre' => 'Fernando', 'primer_apellido' => 'Valenzuela']);
         $this->doctor->assignRole('doctor');
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista Central']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'Central']);
         $this->receptionist->assignRole('receptionist');
 
         $this->patient = Patient::create([

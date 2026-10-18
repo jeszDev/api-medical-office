@@ -50,7 +50,10 @@ class AuthService
     public function register(array $data): array
     {
         $user = User::create([
-            'name' => $data['name'],
+            'curp' => $data['curp'] ?? null,
+            'nombre' => $data['nombre'],
+            'primer_apellido' => $data['primer_apellido'],
+            'segundo_apellido' => $data['segundo_apellido'] ?? null,
             'email' => $data['email'],
             'password' => Hash::make((string) $data['password']),
         ]);

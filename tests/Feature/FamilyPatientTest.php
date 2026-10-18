@@ -28,16 +28,16 @@ class FamilyPatientTest extends TestCase
 
         $this->seed(RolesAndPermissionsSeeder::class);
 
-        $this->fatherUser = User::factory()->create(['name' => 'Carlos Padre', 'email' => 'padre@example.com']);
+        $this->fatherUser = User::factory()->create(['nombre' => 'Carlos', 'primer_apellido' => 'Padre', 'email' => 'padre@example.com']);
         $this->fatherUser->assignRole('patient');
 
-        $this->motherUser = User::factory()->create(['name' => 'Ana Madre', 'email' => 'madre@example.com']);
+        $this->motherUser = User::factory()->create(['nombre' => 'Ana', 'primer_apellido' => 'Madre', 'email' => 'madre@example.com']);
         $this->motherUser->assignRole('patient');
 
-        $this->unrelatedUser = User::factory()->create(['name' => 'Juan Desconocido', 'email' => 'juan@example.com']);
+        $this->unrelatedUser = User::factory()->create(['nombre' => 'Juan', 'primer_apellido' => 'Desconocido', 'email' => 'juan@example.com']);
         $this->unrelatedUser->assignRole('patient');
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista Maria']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'Maria']);
         $this->receptionist->assignRole('receptionist');
     }
 

@@ -33,10 +33,10 @@ class PatientTest extends TestCase
             CatalogAppointmentStatusSeeder::class,
         ]);
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista Maria']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'Maria']);
         $this->receptionist->assignRole('receptionist'); // Tiene patients.view, patients.create, patients.update
 
-        $this->userWithoutPermissions = User::factory()->create(['name' => 'Usuario Sin Roles']);
+        $this->userWithoutPermissions = User::factory()->create(['nombre' => 'Usuario', 'primer_apellido' => 'Sin Roles']);
 
         $this->patient = Patient::create([
             'nombre' => 'Roberto',
@@ -143,10 +143,12 @@ class PatientTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('data.id', $this->patient->id)
+            ->assertJsonPath('data.curp', 'GOMR800101HDFR0001')
             ->assertJsonPath('data.nombre', 'Roberto')
             ->assertJsonStructure([
                 'data' => [
                     'id',
+                    'curp',
                     'nombre',
                     'primer_apellido',
                     'citas',
@@ -161,7 +163,7 @@ class PatientTest extends TestCase
     {
         Sanctum::actingAs($this->receptionist);
 
-        $doctor = User::factory()->create(['name' => 'Dr. House']);
+        $doctor = User::factory()->create(['nombre' => 'Gregory', 'primer_apellido' => 'House']);
 
         // Crear una cita vinculada al paciente
         $appointment = Appointment::create([

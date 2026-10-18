@@ -40,13 +40,13 @@ class AppointmentRequestTest extends TestCase
         CatalogAppointmentStatus::factory()->create(['id' => 5, 'nombre' => 'No asistió']);
         CatalogAppointmentStatus::factory()->create(['id' => 6, 'nombre' => 'En sala de espera']);
 
-        $this->doctor = User::factory()->create(['name' => 'Dr. House', 'email' => 'house@example.com']);
+        $this->doctor = User::factory()->create(['nombre' => 'Gregory', 'primer_apellido' => 'House', 'email' => 'house@example.com']);
         $this->doctor->assignRole('doctor');
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista Carla']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'Carla']);
         $this->receptionist->assignRole('receptionist');
 
-        $this->father = User::factory()->create(['name' => 'Homero Simpson', 'email' => 'homero@example.com']);
+        $this->father = User::factory()->create(['nombre' => 'Homero', 'primer_apellido' => 'Simpson', 'email' => 'homero@example.com']);
         $this->father->assignRole('patient');
 
         $this->child = Patient::create([

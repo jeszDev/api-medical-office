@@ -35,10 +35,10 @@ class CreateAppointmentTest extends TestCase
 
         $this->seed(RolesAndPermissionsSeeder::class);
 
-        $this->doctor = User::factory()->create(['name' => 'Dr. House']);
+        $this->doctor = User::factory()->create(['nombre' => 'Gregory', 'primer_apellido' => 'House']);
         $this->doctor->assignRole('doctor');
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'General']);
         $this->receptionist->assignRole('receptionist');
 
         $this->patient = Patient::create([

@@ -18,7 +18,11 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'curp' => $this->curp,
+            'nombre' => $this->nombre,
+            'primer_apellido' => $this->primer_apellido,
+            'segundo_apellido' => $this->segundo_apellido,
+            'nombre_completo' => $this->full_name,
             'email' => $this->email,
             'roles' => $this->getRoleNames(),
             'permissions' => $this->getAllPermissions()->pluck('name'),

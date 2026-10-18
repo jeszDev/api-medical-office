@@ -28,7 +28,11 @@ class PatientGuardianController extends Controller
 
                 return [
                     'id' => $user->id,
-                    'name' => $user->name,
+                    'curp' => $user->curp,
+                    'nombre' => $user->nombre,
+                    'primer_apellido' => $user->primer_apellido,
+                    'segundo_apellido' => $user->segundo_apellido,
+                    'nombre_completo' => $user->full_name,
                     'email' => $user->email,
                     'relacion' => $user->pivot->relacion,
                     'relacion_texto' => $type?->label() ?? $user->pivot->relacion,
@@ -67,7 +71,7 @@ class PatientGuardianController extends Controller
             'message' => 'Tutor o familiar vinculado exitosamente al paciente.',
             'data' => [
                 'user_id' => $targetUser->id,
-                'user_name' => $targetUser->name,
+                'user_nombre_completo' => $targetUser->full_name,
                 'patient_id' => $patient->id,
                 'relacion' => $relationship->value,
                 'relacion_texto' => $relationship->label(),

@@ -23,7 +23,10 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'curp',
+        'nombre',
+        'primer_apellido',
+        'segundo_apellido',
         'email',
         'password',
     ];
@@ -54,7 +57,7 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => trim("{$this->name} {$this->primer_apellido} {$this->segundo_apellido}")
+            get: fn() => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}")
         );
     }
 

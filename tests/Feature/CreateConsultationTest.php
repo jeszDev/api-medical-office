@@ -37,10 +37,10 @@ class CreateConsultationTest extends TestCase
 
         $this->seed(RolesAndPermissionsSeeder::class);
 
-        $this->doctor = User::factory()->create(['name' => 'Dr. Gregory House']);
+        $this->doctor = User::factory()->create(['nombre' => 'Gregory', 'primer_apellido' => 'House']);
         $this->doctor->assignRole('doctor'); // El doctor tiene el permiso consultations.create
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista Josue']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'Josue']);
         $this->receptionist->assignRole('receptionist'); // La recepcionista NO tiene consultations.create
 
         $this->patient = Patient::create([

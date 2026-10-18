@@ -33,42 +33,78 @@ class DatabaseSeeder extends Seeder
         // Rol: Admin
         $admin = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
-            ['name' => 'Administrador General', 'password' => $password]
+            [
+                'curp' => 'ADMG800101HDFR0001',
+                'nombre' => 'Administrador',
+                'primer_apellido' => 'General',
+                'segundo_apellido' => 'Sistema',
+                'password' => $password,
+            ]
         );
         $admin->assignRole('admin');
 
         // Rol: Doctor (Jessie)
         $doctor = User::firstOrCreate(
             ['email' => 'jessie@gmail.com'],
-            ['name' => 'Dr. Jessie', 'password' => $password]
+            [
+                'curp' => 'DOCJ850315HDFR0002',
+                'nombre' => 'Jessie',
+                'primer_apellido' => 'García',
+                'segundo_apellido' => 'López',
+                'password' => $password,
+            ]
         );
         $doctor->assignRole('doctor');
 
         // Rol: Recepcionista (Josue)
         $receptionist = User::firstOrCreate(
             ['email' => 'josue@gmail.com'],
-            ['name' => 'Recepcionista Josue', 'password' => $password]
+            [
+                'curp' => 'RECJ900820HDFR0003',
+                'nombre' => 'Josue',
+                'primer_apellido' => 'Mendoza',
+                'segundo_apellido' => 'Hernández',
+                'password' => $password,
+            ]
         );
         $receptionist->assignRole('receptionist');
 
         // Rol: Paciente / Tutor (Carlos Gómez - a cargo de su hijo y madre)
         $carlos = User::firstOrCreate(
             ['email' => 'carlos.tutor@gmail.com'],
-            ['name' => 'Carlos Gómez (Tutor)', 'password' => $password]
+            [
+                'curp' => 'GOHC820512HDFR0001',
+                'nombre' => 'Carlos',
+                'primer_apellido' => 'Gómez',
+                'segundo_apellido' => 'Hernández',
+                'password' => $password,
+            ]
         );
         $carlos->assignRole('patient');
 
         // Rol: Paciente / Madre (Ana Martínez - madre de Mateo)
         $ana = User::firstOrCreate(
             ['email' => 'ana.madre@gmail.com'],
-            ['name' => 'Ana Martínez (Madre)', 'password' => $password]
+            [
+                'curp' => 'MARA860614MDFR0005',
+                'nombre' => 'Ana',
+                'primer_apellido' => 'Martínez',
+                'segundo_apellido' => 'Sánchez',
+                'password' => $password,
+            ]
         );
         $ana->assignRole('patient');
 
         // Rol: Paciente Adulto Independiente (Roberto Pérez)
         $roberto = User::firstOrCreate(
             ['email' => 'roberto.adulto@gmail.com'],
-            ['name' => 'Roberto Pérez (Paciente)', 'password' => $password]
+            [
+                'curp' => 'PECR881015HDFR0004',
+                'nombre' => 'Roberto',
+                'primer_apellido' => 'Pérez',
+                'segundo_apellido' => 'Castillo',
+                'password' => $password,
+            ]
         );
         $roberto->assignRole('patient');
 

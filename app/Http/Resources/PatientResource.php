@@ -20,6 +20,7 @@ class PatientResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'curp' => $this->curp,
             'nombre' => $this->nombre,
             'primer_apellido' => $this->primer_apellido,
             'segundo_apellido' => $this->segundo_apellido,

@@ -3,7 +3,7 @@
 @section('title', 'Cita Médica Confirmada - ' . ($clinic['name'] ?? 'Clínica'))
 
 @section('preheader')
-Hola {{ $patient->nombre }}, confirmamos su cita médica con {{ $doctor?->name ?? 'el especialista' }} para el {{ $startDate->translatedFormat('d \d\e F \d\e Y') }}.
+Hola {{ $patient->nombre }}, confirmamos su cita médica con {{ $doctor?->full_name ?? 'el especialista' }} para el {{ $startDate->translatedFormat('d \d\e F \d\e Y') }}.
 @endsection
 
 @section('content')
@@ -93,7 +93,7 @@ Hola {{ $patient->nombre }}, confirmamos su cita médica con {{ $doctor?->name ?
                         Médico Especialista:
                     </td>
                     <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #0f172a; font-weight: 700;">
-                        Dr(a). {{ $doctor?->name ?? 'Médico Asignado' }}
+                        Dr(a). {{ $doctor?->full_name ?? 'Médico Asignado' }}
                     </td>
                 </tr>
                 <tr>
