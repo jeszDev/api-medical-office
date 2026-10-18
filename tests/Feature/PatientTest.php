@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Appointment;
+use App\Models\CatalogAppointmentStatus;
+use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\User;
+use Database\Seeders\CatalogAppointmentStatusSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -24,7 +28,10 @@ class PatientTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(RolesAndPermissionsSeeder::class);
+        $this->seed([
+            RolesAndPermissionsSeeder::class,
+            CatalogAppointmentStatusSeeder::class,
+        ]);
 
         $this->receptionist = User::factory()->create(['name' => 'Recepcionista Maria']);
         $this->receptionist->assignRole('receptionist'); // Tiene patients.view, patients.create, patients.update
@@ -136,7 +143,66 @@ class PatientTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('data.id', $this->patient->id)
-            ->assertJsonPath('data.nombre', 'Roberto');
+            ->assertJsonPath('data.nombre', 'Roberto')
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'nombre',
+                    'primer_apellido',
+                    'citas',
+                    'consultas',
+                ],
+            ])
+            ->assertJsonCount(0, 'data.citas')
+            ->assertJsonCount(0, 'data.consultas');
+    }
+
+    public function test_show_patient_returns_appointments_and_consultations_history(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        $doctor = User::factory()->create(['name' => 'Dr. House']);
+
+        // Crear una cita vinculada al paciente
+        $appointment = Appointment::create([
+            'fecha_hora_inicio' => '2026-10-25 10:00:00',
+            'fecha_hora_termino' => '2026-10-25 10:30:00',
+            'motivo' => 'Revisión anual',
+            'medico_id' => $doctor->id,
+            'cita_estatus_id' => CatalogAppointmentStatus::ATENDIDA,
+        ]);
+        $appointment->patients()->attach($this->patient->id, ['observaciones' => 'Paciente puntual']);
+
+        // Crear una consulta médica ligada a la cita
+        $consultationWithAppointment = Consultation::create([
+            'cita_id' => $appointment->id,
+            'paciente_id' => $this->patient->id,
+            'medico_id' => $doctor->id,
+            'motivo' => 'Revisión general',
+            'diagnostico' => 'Saludable',
+        ]);
+
+        // Crear una consulta médica sin cita (consulta directa/urgencia)
+        $directConsultation = Consultation::create([
+            'cita_id' => null,
+            'paciente_id' => $this->patient->id,
+            'medico_id' => $doctor->id,
+            'motivo' => 'Urgencia menor',
+            'diagnostico' => 'Cefalea tensional',
+        ]);
+
+        $response = $this->getJson("/api/patients/{$this->patient->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.id', $this->patient->id)
+            ->assertJsonCount(1, 'data.citas')
+            ->assertJsonPath('data.citas.0.id', $appointment->id)
+            ->assertJsonPath('data.citas.0.motivo', 'Revisión anual')
+            ->assertJsonPath('data.citas.0.consulta.id', $consultationWithAppointment->id)
+            ->assertJsonPath('data.citas.0.consulta.diagnostico', 'Saludable')
+            ->assertJsonCount(2, 'data.consultas')
+            ->assertJsonPath('data.consultas.0.id', $directConsultation->id)
+            ->assertJsonPath('data.consultas.1.id', $consultationWithAppointment->id);
     }
 
     public function test_update_patient_successfully(): void

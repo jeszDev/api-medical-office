@@ -31,6 +31,7 @@ class AppointmentResource extends JsonResource
             'cita_estatus_id' => $this->cita_estatus_id,
             'estatus' => $this->whenLoaded('status', fn () => $this->status?->nombre, $this->status?->nombre),
             'pacientes' => PatientResource::collection($this->whenLoaded('patients')),
+            'consulta' => new ConsultationResource($this->whenLoaded('consultation')),
 
             'fecha_inicio' => $this->fecha_hora_inicio ? Carbon::parse($this->fecha_hora_inicio)->format('d/m/Y') : null,
             'fecha_termino' => $this->fecha_hora_termino ? Carbon::parse($this->fecha_hora_termino)->format('d/m/Y') : null,

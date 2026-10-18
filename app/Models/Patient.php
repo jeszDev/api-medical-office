@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 
@@ -34,6 +35,11 @@ class Patient extends Model
         return $this->belongsToMany(Appointment::class, 'cita_paciente', 'paciente_id', 'cita_id')
             ->withPivot(['observaciones'])
             ->withTimestamps();
+    }
+
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class, 'paciente_id');
     }
 
     /**

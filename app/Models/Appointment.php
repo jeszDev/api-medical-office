@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Appointment extends Model
 {
@@ -84,5 +86,15 @@ class Appointment extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(CatalogAppointmentStatus::class, 'cita_estatus_id');
+    }
+
+    public function consultation(): HasOne
+    {
+        return $this->hasOne(Consultation::class, 'cita_id');
+    }
+
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class, 'cita_id');
     }
 }

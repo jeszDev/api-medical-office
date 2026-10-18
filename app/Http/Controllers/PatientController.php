@@ -60,6 +60,15 @@ class PatientController extends Controller
     {
         $this->authorize('view', $patient);
 
+        $patient->load([
+            'appointments' => fn ($query) => $query->orderByDesc('fecha_hora_inicio'),
+            'appointments.doctor',
+            'appointments.status',
+            'appointments.consultation',
+            'consultations' => fn ($query) => $query->latest('id'),
+            'consultations.doctor',
+        ]);
+
         return new PatientResource($patient);
     }
 
