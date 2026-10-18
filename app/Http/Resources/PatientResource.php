@@ -40,13 +40,6 @@ class PatientResource extends JsonResource
                 ? Carbon::parse($this->fecha_nacimiento)->age
                 : null,
 
-            // relación con cita (tabla pivote cita_paciente)
-            'detalle_cita' => $this->whenPivotLoaded('cita_paciente', function () {
-                return [
-                    'observaciones' => $this->pivot->observaciones,
-                ];
-            }),
-
             // relación con tutor o cuenta familiar (tabla pivote paciente_usuario)
             'vinculo_familiar' => $this->whenPivotLoaded('paciente_usuario', function () {
                 $type = RelationshipType::tryFrom((string) $this->pivot->relacion);
