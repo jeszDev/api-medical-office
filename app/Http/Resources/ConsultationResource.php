@@ -40,10 +40,7 @@ class ConsultationResource extends JsonResource
                 'nombre_completo' => $this->doctor?->full_name,
             ],
 
-            'paciente_id' => $this->paciente_id,
             'paciente' => new PatientResource($this->whenLoaded('patient')),
-
-            'cita_id' => $this->cita_id,
             'cita' => new AppointmentResource($this->whenLoaded('appointment')),
 
             'creado_el' => $this->created_at ? Carbon::parse($this->created_at)->format('d/m/Y H:i') : null,
