@@ -193,20 +193,35 @@ class PatientTest extends TestCase
             'diagnostico' => 'Cefalea tensional',
         ]);
 
-        // 1. Verificar endpoint de citas del paciente
+        // 1. Verificar endpoint de citas del paciente (paginado por defecto)
         $appointmentsResponse = $this->getJson("/api/patients/{$this->patient->id}/appointments");
         $appointmentsResponse->assertStatus(200)
+            ->assertJsonStructure(['data', 'links', 'meta'])
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $appointment->id)
             ->assertJsonPath('data.0.motivo', 'Revisión anual')
-            ->assertJsonPath('data.0.consulta.id', $consultationWithAppointment->id);
+            ->assertJsonPath('data.0.consulta.id', $consultationWithAppointment->id)
+            ->assertJsonMissingPath('data.0.pacientes');
 
-        // 2. Verificar endpoint de consultas del paciente
+        // 1.1 Verificar parámetro all=true para citas sin paginar
+        $allAppointmentsResponse = $this->getJson("/api/patients/{$this->patient->id}/appointments?all=true");
+        $allAppointmentsResponse->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonMissingExact(['meta']);
+
+        // 2. Verificar endpoint de consultas del paciente (paginado por defecto)
         $consultationsResponse = $this->getJson("/api/patients/{$this->patient->id}/consultations");
         $consultationsResponse->assertStatus(200)
+            ->assertJsonStructure(['data', 'links', 'meta'])
             ->assertJsonCount(2, 'data')
             ->assertJsonPath('data.0.id', $directConsultation->id)
             ->assertJsonPath('data.1.id', $consultationWithAppointment->id);
+
+        // 2.1 Verificar parámetro all=true para consultas sin paginar
+        $allConsultationsResponse = $this->getJson("/api/patients/{$this->patient->id}/consultations?all=true");
+        $allConsultationsResponse->assertStatus(200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonMissingExact(['meta']);
 
         // 3. Verificar creación de consulta directa sin cita
         Sanctum::actingAs($doctor);

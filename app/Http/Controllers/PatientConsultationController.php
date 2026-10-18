@@ -27,8 +27,10 @@ class PatientConsultationController extends Controller
             ->with(['doctor', 'appointment'])
             ->latest('id');
 
+        $all = ($request->has('page') && $request->integer('page') === 0) || $request->boolean('all');
         $perPage = $request->integer('per_page', 10);
-        $consultations = $request->integer('page') === 0
+
+        $consultations = $all
             ? $query->get()
             : $query->paginate($perPage);
 

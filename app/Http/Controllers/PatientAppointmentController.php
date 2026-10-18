@@ -24,7 +24,7 @@ class PatientAppointmentController extends Controller
         $this->authorize('viewAny', Appointment::class);
 
         $query = $patient->appointments()
-            ->with(['patients', 'doctor', 'status', 'consultation'])
+            ->with(['doctor', 'status', 'consultation'])
             ->orderByDesc('fecha_hora_inicio');
 
         if ($request->filled('status')) {
@@ -36,8 +36,10 @@ class PatientAppointmentController extends Controller
             }
         }
 
+        $all = ($request->has('page') && $request->integer('page') === 0) || $request->boolean('all');
         $perPage = $request->integer('per_page', 10);
-        $appointments = $request->integer('page') === 0
+
+        $appointments = $all
             ? $query->get()
             : $query->paginate($perPage);
 
