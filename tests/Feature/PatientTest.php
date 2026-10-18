@@ -82,6 +82,12 @@ class PatientTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.nombre', 'Roberto')
             ->assertJsonPath('data.0.primer_apellido', 'Gómez');
+
+        // Búsqueda por CURP en parámetro search (insensible a mayúsculas/minúsculas)
+        $searchCurpResponse = $this->getJson('/api/patients?search=tore850202');
+        $searchCurpResponse->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.curp', 'TORE850202MDFR0002');
     }
 
     public function test_user_can_list_all_patients_without_pagination_when_requested(): void
@@ -217,6 +223,17 @@ class PatientTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonMissingExact(['meta']);
 
+        // 1.2 Verificar búsqueda de citas por folio
+        $searchAppointmentsResponse = $this->getJson("/api/patients/{$this->patient->id}/appointments?search={$appointment->folio}");
+        $searchAppointmentsResponse->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $appointment->id)
+            ->assertJsonPath('data.0.folio', $appointment->folio);
+
+        $searchAppointmentsNotFound = $this->getJson("/api/patients/{$this->patient->id}/appointments?search=CIT-INEXISTENTE");
+        $searchAppointmentsNotFound->assertStatus(200)
+            ->assertJsonCount(0, 'data');
+
         // 2. Verificar endpoint de consultas del paciente (paginado por defecto)
         $consultationsResponse = $this->getJson("/api/patients/{$this->patient->id}/consultations");
         $consultationsResponse->assertStatus(200)
@@ -302,5 +319,49 @@ class PatientTest extends TestCase
         $latestActivity = Activity::where('log_name', 'pacientes')->latest()->first();
         $this->assertNotNull($latestActivity);
         $this->assertEquals('Paciente eliminado', $latestActivity->description);
+    }
+
+    public function test_patient_appointments_search_by_folio_filters_correctly(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        $doctor = User::factory()->create();
+
+        $cita1 = Appointment::create([
+            'folio' => 'CIT-2026-0001',
+            'fecha_hora_inicio' => '2026-10-25 10:00:00',
+            'fecha_hora_termino' => '2026-10-25 10:30:00',
+            'motivo' => 'Consulta 1',
+            'medico_id' => $doctor->id,
+            'cita_estatus_id' => CatalogAppointmentStatus::CONFIRMADA,
+        ]);
+        $cita1->patients()->attach($this->patient->id);
+
+        $cita2 = Appointment::create([
+            'folio' => 'CIT-2026-0002',
+            'fecha_hora_inicio' => '2026-10-26 10:00:00',
+            'fecha_hora_termino' => '2026-10-26 10:30:00',
+            'motivo' => 'Consulta 2',
+            'medico_id' => $doctor->id,
+            'cita_estatus_id' => CatalogAppointmentStatus::CONFIRMADA,
+        ]);
+        $cita2->patients()->attach($this->patient->id);
+
+        // Búsqueda exacta
+        $response = $this->getJson("/api/patients/{$this->patient->id}/appointments?search=CIT-2026-0001");
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.folio', 'CIT-2026-0001');
+
+        // Búsqueda parcial por número
+        $responsePartial = $this->getJson("/api/patients/{$this->patient->id}/appointments?search=0002");
+        $responsePartial->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.folio', 'CIT-2026-0002');
+
+        // Búsqueda sin coincidencias
+        $responseNone = $this->getJson("/api/patients/{$this->patient->id}/appointments?search=CIT-9999");
+        $responseNone->assertStatus(200)
+            ->assertJsonCount(0, 'data');
     }
 }

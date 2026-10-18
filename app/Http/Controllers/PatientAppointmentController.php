@@ -36,6 +36,11 @@ class PatientAppointmentController extends Controller
             }
         }
 
+        if ($request->filled('search')) {
+            $search = trim((string) $request->input('search'));
+            $query->where('citas.folio', 'like', "%{$search}%");
+        }
+
         $all = ($request->has('page') && $request->integer('page') === 0) || $request->boolean('all');
         $perPage = $request->integer('per_page', 10);
 
