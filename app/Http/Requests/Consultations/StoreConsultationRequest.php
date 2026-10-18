@@ -17,6 +17,19 @@ class StoreConsultationRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->route('patient') && ! $this->has('paciente_id')) {
+            $patient = $this->route('patient');
+            $this->merge([
+                'paciente_id' => is_object($patient) ? $patient->id : $patient,
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>

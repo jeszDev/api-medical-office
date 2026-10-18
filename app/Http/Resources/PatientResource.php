@@ -40,10 +40,6 @@ class PatientResource extends JsonResource
                 ? Carbon::parse($this->fecha_nacimiento)->age
                 : null,
 
-            // historial de citas y consultas médicas
-            'citas' => AppointmentResource::collection($this->whenLoaded('appointments')),
-            'consultas' => ConsultationResource::collection($this->whenLoaded('consultations')),
-
             // relación con cita (tabla pivote cita_paciente)
             'detalle_cita' => $this->whenPivotLoaded('cita_paciente', function () {
                 return [

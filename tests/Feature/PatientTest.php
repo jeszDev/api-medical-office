@@ -151,15 +151,15 @@ class PatientTest extends TestCase
                     'curp',
                     'nombre',
                     'primer_apellido',
-                    'citas',
-                    'consultas',
+                    'segundo_apellido',
+                    'nombre_completo',
+                    'fecha_nacimiento',
+                    'edad',
                 ],
-            ])
-            ->assertJsonCount(0, 'data.citas')
-            ->assertJsonCount(0, 'data.consultas');
+            ]);
     }
 
-    public function test_show_patient_returns_appointments_and_consultations_history(): void
+    public function test_patient_appointments_and_consultations_dedicated_endpoints(): void
     {
         Sanctum::actingAs($this->receptionist);
 
@@ -193,18 +193,41 @@ class PatientTest extends TestCase
             'diagnostico' => 'Cefalea tensional',
         ]);
 
-        $response = $this->getJson("/api/patients/{$this->patient->id}");
+        // 1. Verificar endpoint de citas del paciente
+        $appointmentsResponse = $this->getJson("/api/patients/{$this->patient->id}/appointments");
+        $appointmentsResponse->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $appointment->id)
+            ->assertJsonPath('data.0.motivo', 'Revisión anual')
+            ->assertJsonPath('data.0.consulta.id', $consultationWithAppointment->id);
 
-        $response->assertStatus(200)
-            ->assertJsonPath('data.id', $this->patient->id)
-            ->assertJsonCount(1, 'data.citas')
-            ->assertJsonPath('data.citas.0.id', $appointment->id)
-            ->assertJsonPath('data.citas.0.motivo', 'Revisión anual')
-            ->assertJsonPath('data.citas.0.consulta.id', $consultationWithAppointment->id)
-            ->assertJsonPath('data.citas.0.consulta.diagnostico', 'Saludable')
-            ->assertJsonCount(2, 'data.consultas')
-            ->assertJsonPath('data.consultas.0.id', $directConsultation->id)
-            ->assertJsonPath('data.consultas.1.id', $consultationWithAppointment->id);
+        // 2. Verificar endpoint de consultas del paciente
+        $consultationsResponse = $this->getJson("/api/patients/{$this->patient->id}/consultations");
+        $consultationsResponse->assertStatus(200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.id', $directConsultation->id)
+            ->assertJsonPath('data.1.id', $consultationWithAppointment->id);
+
+        // 3. Verificar creación de consulta directa sin cita
+        Sanctum::actingAs($doctor);
+        $doctor->givePermissionTo('consultations.create');
+
+        $storeResponse = $this->postJson("/api/patients/{$this->patient->id}/consultations", [
+            'motivo' => 'Consulta no programada / urgencia',
+            'diagnostico' => 'Faringitis aguda',
+            'tratamiento' => 'Reposo y analgésicos',
+        ]);
+
+        $storeResponse->assertStatus(201)
+            ->assertJsonPath('data.motivo', 'Consulta no programada / urgencia')
+            ->assertJsonPath('data.diagnostico', 'Faringitis aguda')
+            ->assertJsonPath('data.paciente.id', $this->patient->id);
+
+        $this->assertDatabaseHas('consultas', [
+            'paciente_id' => $this->patient->id,
+            'cita_id' => null,
+            'motivo' => 'Consulta no programada / urgencia',
+        ]);
     }
 
     public function test_update_patient_successfully(): void

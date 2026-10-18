@@ -10,6 +10,7 @@ use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PatientAppointmentController extends Controller
@@ -17,14 +18,28 @@ class PatientAppointmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Patient $patient): AnonymousResourceCollection
+    public function index(Request $request, Patient $patient): AnonymousResourceCollection
     {
+        $this->authorize('view', $patient);
         $this->authorize('viewAny', Appointment::class);
 
-        $appointments = $patient->appointments()
-            ->with(['patients', 'doctor', 'status'])
-            ->orderByDesc('id')
-            ->get();
+        $query = $patient->appointments()
+            ->with(['patients', 'doctor', 'status', 'consultation'])
+            ->orderByDesc('fecha_hora_inicio');
+
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            if (is_numeric($status)) {
+                $query->where('cita_estatus_id', (int) $status);
+            } else {
+                $query->whereHas('status', fn ($q) => $q->where('nombre', $status));
+            }
+        }
+
+        $perPage = $request->integer('per_page', 10);
+        $appointments = $request->integer('page') === 0
+            ? $query->get()
+            : $query->paginate($perPage);
 
         return AppointmentResource::collection($appointments);
     }
