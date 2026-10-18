@@ -138,8 +138,8 @@ class CreateAppointmentTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('data.motivo', 'Consulta general')
             ->assertJsonPath('data.observaciones', 'Primera visita')
-            ->assertJsonPath('data.medico_id', $this->doctor->id)
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::PENDIENTE)
+            ->assertJsonPath('data.doctor.id', $this->doctor->id)
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::PENDIENTE)
             ->assertJsonPath('data.pacientes.0.id', $this->patient->id);
 
         $folio = $response->json('data.folio');

@@ -143,7 +143,7 @@ class CreateConsultationTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('data.diagnostico', 'Gastritis aguda moderada')
             ->assertJsonPath('data.observaciones', 'Paciente refiere mejoría previa con dieta blanda')
-            ->assertJsonPath('data.medico_id', $this->doctor->id)
+            ->assertJsonPath('data.doctor.id', $this->doctor->id)
             ->assertJsonPath('data.paciente_id', $this->patient->id)
             ->assertJsonPath('data.cita_id', $this->appointment->id)
             ->assertJsonPath('data.signos_vitales.peso', '74.50')

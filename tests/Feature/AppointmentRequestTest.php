@@ -82,7 +82,7 @@ class AppointmentRequestTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('data.motivo', 'Fiebre y dolor de garganta')
             ->assertJsonPath('data.turno_preferido', 'tarde')
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::PENDIENTE)
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::PENDIENTE)
             ->assertJsonPath('data.fecha_hora_inicio', null)
             ->assertJsonPath('data.fecha_hora_termino', null);
 
@@ -140,7 +140,7 @@ class AppointmentRequestTest extends TestCase
 
         $confirmResponse->assertStatus(200)
             ->assertJsonPath('data.id', $appointmentId)
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::CONFIRMADA)
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::CONFIRMADA)
             ->assertJsonPath('data.fecha_hora_inicio', $startTime)
             ->assertJsonPath('data.fecha_hora_termino', $endTime);
 
@@ -238,7 +238,7 @@ class AppointmentRequestTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('data.id', $appointment->id)
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::EN_SALA_DE_ESPERA);
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::EN_SALA_DE_ESPERA);
 
         $this->assertDatabaseHas('citas', [
             'id' => $appointment->id,
@@ -269,7 +269,7 @@ class AppointmentRequestTest extends TestCase
         $response = $this->patchJson("/api/appointments/{$appointment->id}/check-in");
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::EN_SALA_DE_ESPERA);
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::EN_SALA_DE_ESPERA);
     }
 
     public function test_doctor_can_attend_appointment_directly_from_waiting_room(): void
@@ -320,7 +320,7 @@ class AppointmentRequestTest extends TestCase
         $response = $this->patchJson("/api/appointments/{$appointment->id}/no-show");
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::NO_ASISTIO);
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::NO_ASISTIO);
 
         $this->assertDatabaseHas('citas', [
             'id' => $appointment->id,
@@ -353,6 +353,6 @@ class AppointmentRequestTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $inWaitingRoom->id)
-            ->assertJsonPath('data.0.cita_estatus_id', CatalogAppointmentStatus::EN_SALA_DE_ESPERA);
+            ->assertJsonPath('data.0.estatus.id', CatalogAppointmentStatus::EN_SALA_DE_ESPERA);
     }
 }

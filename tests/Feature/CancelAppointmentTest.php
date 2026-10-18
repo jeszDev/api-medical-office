@@ -133,8 +133,8 @@ class CancelAppointmentTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('data.id', $this->appointment->id)
-            ->assertJsonPath('data.estatus', 'Cancelada')
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::CANCELADA);
+            ->assertJsonPath('data.estatus.nombre', 'Cancelada')
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::CANCELADA);
 
         // 1. Verificar persistencia en base de datos
         $this->assertDatabaseHas('citas', [

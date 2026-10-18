@@ -35,8 +35,10 @@ class ConsultationResource extends JsonResource
                 'frecuencia_respiratoria' => $this->frecuencia_respiratoria,
             ],
 
-            'medico_id' => $this->medico_id,
-            'medico' => $this->whenLoaded('doctor', fn () => $this->doctor?->full_name),
+            'doctor' => [
+                'id' => $this->doctor?->id ?? $this->medico_id,
+                'nombre_completo' => $this->doctor?->full_name,
+            ],
 
             'paciente_id' => $this->paciente_id,
             'paciente' => new PatientResource($this->whenLoaded('patient')),
