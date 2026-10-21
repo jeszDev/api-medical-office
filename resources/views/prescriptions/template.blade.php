@@ -181,14 +181,32 @@
     <!-- Encabezado Institucional -->
     <table class="header-table">
         <tr>
-            <td style="width: 70%;">
-                <div class="clinic-name">{{ config('clinic.name') }}</div>
+            @if(!empty($clinic->logotipo_path) && file_exists(public_path($clinic->logotipo_path)))
+            <td style="width: 15%; vertical-align: middle;">
+                <img src="{{ public_path($clinic->logotipo_path) }}" style="max-height: 55px; max-width: 95px; display: block;" alt="Logo">
+            </td>
+            <td style="width: 55%; vertical-align: middle;">
+            @else
+            <td style="width: 70%; vertical-align: middle;">
+            @endif
+                <div class="clinic-name">{{ $clinic->nombre ?? config('clinic.name') }}</div>
                 <div class="clinic-sub">
-                    {{ config('clinic.legal_name') }} &bull; RFC: {{ config('clinic.tax_id') }}<br>
-                    {{ config('clinic.address') }} &bull; Tel: {{ config('clinic.phone') }}
+                    @if(!empty($clinic->razon_social))
+                        {{ $clinic->razon_social }} &bull;
+                    @endif
+                    @if(!empty($clinic->rfc))
+                        RFC: {{ $clinic->rfc }}<br>
+                    @endif
+                    @if(!empty($clinic->direccion))
+                        {{ $clinic->direccion }} &bull;
+                    @endif
+                    Tel: {{ $clinic->telefono ?? config('clinic.phone') }}
+                    @if(!empty($clinic->telefono_urgencias))
+                        &bull; Urg: {{ $clinic->telefono_urgencias }}
+                    @endif
                 </div>
             </td>
-            <td style="width: 30%;">
+            <td style="width: 30%; vertical-align: middle;">
                 <div class="folio-box">
                     <div class="folio-title">RECETA MÉDICA</div>
                     <div class="folio-number">{{ $consultation->folio_receta }}</div>
@@ -306,7 +324,7 @@
     </table>
 
     <div class="legal-notice">
-        {{ config('clinic.legal_notice') }}
+        {{ $clinic->leyenda_receta ?? config('clinic.legal_notice') }}
     </div>
 
 </body>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentConsultationController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClinicSettingController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\ConsultationPrescriptionController;
 use App\Http\Controllers\DoctorProfileController;
@@ -46,6 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('doctor/profile', [DoctorProfileController::class, 'show'])->name('doctor.profile.show');
     Route::post('doctor/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
     Route::put('doctor/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.put');
+
+    // Configuración institucional de la clínica
+    Route::get('clinic/settings', [ClinicSettingController::class, 'show'])->name('clinic.settings.show');
+    Route::post('clinic/settings', [ClinicSettingController::class, 'update'])->name('clinic.settings.update');
+    Route::put('clinic/settings', [ClinicSettingController::class, 'update'])->name('clinic.settings.put');
 
     Route::apiResource('consultations', ConsultationController::class);
     Route::post('consultations/{consultation}/prescription', [ConsultationPrescriptionController::class, 'store'])->name('consultations.prescription.store');

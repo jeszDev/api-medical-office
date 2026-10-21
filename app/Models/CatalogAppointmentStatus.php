@@ -15,7 +15,7 @@ class CatalogAppointmentStatus extends Model
 
     protected $table = 'catalogo_cita_estatus';
 
-    protected $fillable = ['nombre'];
+    protected $fillable = ['id', 'nombre'];
 
     public const PENDIENTE = 1;
     public const CONFIRMADA = 2;

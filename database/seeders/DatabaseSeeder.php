@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\CatalogAppointmentStatus;
+use App\Models\ClinicSetting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // 0. Configuración institucional inicial de la clínica
+        ClinicSetting::firstOrCreate(
+            ['id' => 1],
+            [
+                'nombre' => 'Centro Médico Santa María',
+                'razon_social' => 'Servicios de Salud Integral S.A. de C.V.',
+                'rfc' => 'SSI200101XYZ',
+                'direccion' => 'Av. Juárez #1020, Col. Centro, C.P. 06000, Ciudad de México',
+                'telefono' => '555-334-5566',
+                'telefono_urgencias' => '555-999-8877',
+                'correo_electronico' => 'contacto@clinicasantamaria.com',
+                'leyenda_receta' => 'Medicamento sujeto a prescripción médica. Consérvese en lugar fresco y seco fuera del alcance de los niños. Presentar esta receta en farmacia.',
+            ]
+        );
+
         // 1. Catálogo completo de estatus de citas
         CatalogAppointmentStatus::firstOrCreate(['id' => 1], ['nombre' => 'Pendiente']);
         CatalogAppointmentStatus::firstOrCreate(['id' => 2], ['nombre' => 'Confirmada']);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Consultations;
 
+use App\Models\ClinicSetting;
 use App\Models\Consultation;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,11 +30,14 @@ class GeneratePrescriptionPdfAction
 
         $consultation->receta_generada_el = now();
 
+        $clinic = ClinicSetting::getSettings();
+
         // 2. Renderizar plantilla Blade en PDF mediante DomPDF
         $pdf = Pdf::loadView('prescriptions.template', [
             'consultation' => $consultation,
             'doctor' => $consultation->doctor,
             'patient' => $consultation->patient,
+            'clinic' => $clinic,
         ])->setPaper('letter', 'portrait');
 
         $pdfBinary = $pdf->output();

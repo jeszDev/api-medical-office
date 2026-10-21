@@ -45,6 +45,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'consultations.create',
             'consultations.update',
             'consultations.delete',
+
+            // Configuración Institucional de la Clínica
+            'clinic.view',
+            'clinic.update',
         ];
 
         foreach ($permissions as $permission) {
@@ -83,6 +87,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'appointments.confirm',
 
             'consultations.view',
+            'clinic.view',
         ]);
 
         // Doctor: Atención clínica de citas y consultas médicas
@@ -95,6 +100,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'consultations.view',
             'consultations.create',
             'consultations.update',
+            'clinic.view',
         ]);
 
         // Paciente / Tutor: Acceso a su propio expediente y citas (filtrado por Policy)
