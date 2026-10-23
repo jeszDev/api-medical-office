@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Consultation extends Model
 {
@@ -94,5 +95,13 @@ class Consultation extends Model
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class, 'cita_id');
+    }
+
+    /**
+     * Documentos y estudios clínicos anexados a la consulta.
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(ConsultationDocument::class, 'consulta_id');
     }
 }

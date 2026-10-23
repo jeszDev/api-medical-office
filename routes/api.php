@@ -5,11 +5,13 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClinicSettingController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\ConsultationDocumentController;
 use App\Http\Controllers\ConsultationPrescriptionController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\MyPatientController;
 use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientDocumentController;
 use App\Http\Controllers\PatientGuardianController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -53,9 +55,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('clinic/settings', [ClinicSettingController::class, 'update'])->name('clinic.settings.update');
     Route::put('clinic/settings', [ClinicSettingController::class, 'update'])->name('clinic.settings.put');
 
+    // Expediente cronológico de estudios y documentos por paciente
+    Route::get('patients/{patient}/documents', [PatientDocumentController::class, 'index'])->name('patients.documents.index');
+
     Route::apiResource('consultations', ConsultationController::class);
     Route::post('consultations/{consultation}/prescription', [ConsultationPrescriptionController::class, 'store'])->name('consultations.prescription.store');
     Route::get('consultations/{consultation}/prescription', [ConsultationPrescriptionController::class, 'show'])->name('consultations.prescription.show');
+
+    // Documentos y estudios clínicos derivados de la consulta médica (AWS S3 / Cloudflare R2 / Local)
+    Route::get('consultations/{consultation}/documents', [ConsultationDocumentController::class, 'index'])->name('consultations.documents.index');
+    Route::post('consultations/{consultation}/documents', [ConsultationDocumentController::class, 'store'])->name('consultations.documents.store');
+    Route::get('consultations/{consultation}/documents/{document}', [ConsultationDocumentController::class, 'show'])->name('consultations.documents.show');
+    Route::delete('consultations/{consultation}/documents/{document}', [ConsultationDocumentController::class, 'destroy'])->name('consultations.documents.destroy');
+    Route::post('consultations/{consultation}/documents/{document}/restore', [ConsultationDocumentController::class, 'restore'])->name('consultations.documents.restore');
+    Route::get('consultations/{consultation}/documents/{document}/stream', [ConsultationDocumentController::class, 'stream'])->name('consultations.documents.stream');
 
     Route::apiResource('appointments.consultations', AppointmentConsultationController::class);
 });
