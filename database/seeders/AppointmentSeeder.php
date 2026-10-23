@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\PreferredShift;
 use App\Models\Appointment;
 use App\Models\CatalogAppointmentStatus;
 use App\Models\Consultation;
@@ -118,7 +119,7 @@ class AppointmentSeeder extends Seeder
                 'fecha_hora_inicio' => null,
                 'fecha_hora_termino' => null,
                 'fecha_preferida' => Carbon::now()->addDays(12)->format('Y-m-d'),
-                'turno_preferido' => 'tarde',
+                'turno_preferido' => PreferredShift::VESPERTINO,
                 'motivo' => 'Solicitud de valoración visual por quejas de visión borrosa en escuela',
                 'observaciones' => 'Tutor solicita cita después de las 4 PM por horario escolar.',
                 'medico_id' => $doctor->id,
@@ -233,7 +234,7 @@ class AppointmentSeeder extends Seeder
                 'fecha_hora_inicio' => null,
                 'fecha_hora_termino' => null,
                 'fecha_preferida' => Carbon::now()->addDays(4)->format('Y-m-d'),
-                'turno_preferido' => 'manana',
+                'turno_preferido' => PreferredShift::MATUTINO,
                 'motivo' => 'Solicitud de reprogramación para interpretación de análisis clínicos pendientes',
                 'medico_id' => $doctor->id,
                 'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\PreferredShift;
 use App\Models\Appointment;
 use App\Models\CatalogAppointmentStatus;
 use App\Models\User;
@@ -89,7 +90,7 @@ class AppointmentFactory extends Factory
             'fecha_hora_inicio' => null,
             'fecha_hora_termino' => null,
             'fecha_preferida' => $this->faker->dateTimeBetween('+1 days', '+2 weeks')->format('Y-m-d'),
-            'turno_preferido' => $this->faker->randomElement(['manana', 'tarde', 'indistinto']),
+            'turno_preferido' => $this->faker->randomElement(PreferredShift::cases()),
             'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
         ]);
     }

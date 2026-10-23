@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Appointments;
 
+use App\Enums\PreferredShift;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class RequestAppointmentRequest extends FormRequest
 {
@@ -28,7 +30,7 @@ class RequestAppointmentRequest extends FormRequest
             'medico_id' => ['required', 'integer', 'exists:users,id'],
             'motivo' => ['required', 'string', 'max:1000'],
             'fecha_preferida' => ['nullable', 'date', 'after_or_equal:today'],
-            'turno_preferido' => ['nullable', 'string', 'max:30'],
+            'turno_preferido' => ['nullable', new Enum(PreferredShift::class)],
             'observaciones' => ['nullable', 'string', 'max:1000'],
             'observaciones_paciente' => ['nullable', 'string', 'max:500'],
         ];
