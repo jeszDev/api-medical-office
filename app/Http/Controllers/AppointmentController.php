@@ -46,6 +46,16 @@ class AppointmentController extends Controller
             ->when($request->filled('status'), function ($q) use ($request) {
                 $q->where('cita_estatus_id', $request->integer('status'));
             })
+            ->when($request->boolean('pendientes_asignacion'), function ($q) {
+                $q->whereNull('fecha_hora_inicio')
+                    ->whereNull('fecha_hora_termino')
+                    ->whereNotNull('fecha_preferida')
+                    ->whereNotNull('turno_preferido');
+            })
+            ->when($request->boolean('con_horario'), function ($q) {
+                $q->whereNotNull('fecha_hora_inicio')
+                    ->whereNotNull('fecha_hora_termino');
+            })
             ->latest('id')
             ->get();
 

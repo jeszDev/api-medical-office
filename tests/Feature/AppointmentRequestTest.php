@@ -370,4 +370,45 @@ class AppointmentRequestTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['turno_preferido']);
     }
+
+    public function test_can_filter_appointments_pending_assignment(): void
+    {
+        // 1. Cita agendada con horario
+        $scheduled = Appointment::create([
+            'medico_id' => $this->doctor->id,
+            'cita_estatus_id' => CatalogAppointmentStatus::CONFIRMADA,
+            'fecha_hora_inicio' => Carbon::now()->addDay()->setHour(10)->format('Y-m-d H:i:s'),
+            'fecha_hora_termino' => Carbon::now()->addDay()->setHour(10)->setMinute(30)->format('Y-m-d H:i:s'),
+            'motivo' => 'Cita con horario definido',
+        ]);
+        $scheduled->patients()->attach($this->child->id);
+
+        // 2. Solicitud pendiente de horario
+        $requested = Appointment::create([
+            'medico_id' => $this->doctor->id,
+            'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
+            'fecha_hora_inicio' => null,
+            'fecha_hora_termino' => null,
+            'fecha_preferida' => Carbon::now()->addDays(3)->format('Y-m-d'),
+            'turno_preferido' => \App\Enums\PreferredShift::MATUTINO,
+            'motivo' => 'Solicitud pendiente de horario',
+        ]);
+        $requested->patients()->attach($this->child->id);
+
+        Sanctum::actingAs($this->doctor);
+
+        // Filtrar pendientes de asignación
+        $response = $this->getJson('/api/appointments?pendientes_asignacion=true');
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $requested->id)
+            ->assertJsonPath('data.0.motivo', 'Solicitud pendiente de horario')
+            ->assertJsonPath('data.0.turno_preferido', 'matutino');
+
+        // Filtrar con horario asignado
+        $responseScheduled = $this->getJson('/api/appointments?con_horario=true');
+        $responseScheduled->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $scheduled->id);
+    }
 }
