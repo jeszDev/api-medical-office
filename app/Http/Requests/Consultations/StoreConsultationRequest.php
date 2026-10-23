@@ -17,6 +17,20 @@ class StoreConsultationRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $patient = $this->route('patient');
+
+        if ($patient instanceof \App\Models\Patient) {
+            $this->mergeIfMissing(['paciente_id' => $patient->id]);
+        } elseif (is_numeric($patient)) {
+            $this->mergeIfMissing(['paciente_id' => (int) $patient]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>

@@ -10,6 +10,7 @@ use App\Http\Controllers\ConsultationPrescriptionController;
 use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\MyPatientController;
 use App\Http\Controllers\PatientAppointmentController;
+use App\Http\Controllers\PatientConsultationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientDocumentController;
 use App\Http\Controllers\PatientGuardianController;
@@ -44,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('appointments', AppointmentController::class);
 
     Route::apiResource('patients.appointments', PatientAppointmentController::class);
+    Route::apiResource('patients.consultations', PatientConsultationController::class)->only(['index', 'store', 'show']);
 
     // Perfil profesional y cédula del médico
     Route::get('doctor/profile', [DoctorProfileController::class, 'show'])->name('doctor.profile.show');

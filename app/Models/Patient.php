@@ -77,4 +77,12 @@ class Patient extends Model
     {
         return $this->hasMany(ConsultationDocument::class, 'paciente_id');
     }
+
+    /**
+     * Consultas médicas asociadas al paciente.
+     */
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class, 'paciente_id');
+    }
 }
