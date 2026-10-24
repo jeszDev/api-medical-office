@@ -19,8 +19,11 @@ class CancelAppointmentTest extends TestCase
     use RefreshDatabase;
 
     private User $receptionist;
+
     private User $doctor;
+
     private Patient $patient;
+
     private Appointment $appointment;
 
     protected function setUp(): void
@@ -34,10 +37,10 @@ class CancelAppointmentTest extends TestCase
 
         $this->seed(RolesAndPermissionsSeeder::class);
 
-        $this->doctor = User::factory()->create(['name' => 'Dr. House']);
+        $this->doctor = User::factory()->create(['nombre' => 'Gregory', 'primer_apellido' => 'House']);
         $this->doctor->assignRole('doctor'); // En el seeder el doctor NO tiene appointments.cancel
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'General']);
         $this->receptionist->assignRole('receptionist'); // Recepcionista SÍ tiene appointments.cancel
 
         $this->patient = Patient::create([
@@ -133,8 +136,8 @@ class CancelAppointmentTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('data.id', $this->appointment->id)
-            ->assertJsonPath('data.estatus', 'Cancelada')
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::CANCELADA);
+            ->assertJsonPath('data.estatus.nombre', 'Cancelada')
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::CANCELADA);
 
         // 1. Verificar persistencia en base de datos
         $this->assertDatabaseHas('citas', [

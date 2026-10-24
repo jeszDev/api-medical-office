@@ -26,11 +26,17 @@ class AppointmentResource extends JsonResource
             'turno_preferido' => $this->turno_preferido?->value ?? $this->turno_preferido,
             'motivo' => $this->motivo,
             'observaciones' => $this->observaciones,
-            'medico_id' => $this->medico_id,
-            'medico' => $this->whenLoaded('doctor', fn () => $this->doctor?->full_name, $this->doctor?->full_name),
-            'cita_estatus_id' => $this->cita_estatus_id,
-            'estatus' => $this->whenLoaded('status', fn () => $this->status?->nombre, $this->status?->nombre),
+
+            'doctor' => [
+                'id' => $this->doctor?->id ?? $this->medico_id,
+                'nombre_completo' => $this->doctor?->full_name,
+            ],
+            'estatus' => [
+                'id' => $this->status?->id ?? $this->cita_estatus_id,
+                'nombre' => $this->status?->nombre,
+            ],
             'pacientes' => PatientResource::collection($this->whenLoaded('patients')),
+            'consulta' => new ConsultationResource($this->whenLoaded('consultation')),
 
             'fecha_inicio' => $this->fecha_hora_inicio ? Carbon::parse($this->fecha_hora_inicio)->format('d/m/Y') : null,
             'fecha_termino' => $this->fecha_hora_termino ? Carbon::parse($this->fecha_hora_termino)->format('d/m/Y') : null,

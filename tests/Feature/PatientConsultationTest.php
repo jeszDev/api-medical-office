@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\Appointment;
 use App\Models\CatalogAppointmentStatus;
 use App\Models\Consultation;
 use App\Models\Patient;
@@ -80,7 +79,7 @@ class PatientConsultationTest extends TestCase
                         'motivo',
                         'diagnostico',
                         'signos_vitales',
-                        'medico',
+                        'doctor',
                         'creado_el',
                     ],
                 ],
@@ -129,7 +128,7 @@ class PatientConsultationTest extends TestCase
         $response = $this->postJson("/api/patients/{$this->patient->id}/consultations", $payload);
 
         $response->assertCreated()
-            ->assertJsonPath('data.paciente_id', $this->patient->id)
+            ->assertJsonPath('data.paciente.id', $this->patient->id)
             ->assertJsonPath('data.motivo', 'Revisión pediátrica de rutina')
             ->assertJsonPath('data.signos_vitales.peso', '22.50');
 

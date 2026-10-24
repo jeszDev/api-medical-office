@@ -15,7 +15,9 @@ Route::get('/', function () {
 if (app()->environment('local', 'testing')) {
     Route::get('/dev/email-preview/{type}', function (string $type) {
         $doctor = new User([
-            'name' => 'Dr. Roberto Sánchez Morales',
+            'nombre' => 'Roberto',
+            'primer_apellido' => 'Sánchez',
+            'segundo_apellido' => 'Morales',
             'email' => 'dr.sanchez@starmedica-ejemplo.com',
         ]);
         $doctor->id = 1;

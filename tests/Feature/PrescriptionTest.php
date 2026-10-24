@@ -23,9 +23,13 @@ class PrescriptionTest extends TestCase
     use RefreshDatabase;
 
     private User $doctor;
+
     private User $patientUser;
+
     private User $unrelatedPatientUser;
+
     private Patient $patient;
+
     private Consultation $consultation;
 
     protected function setUp(): void
@@ -122,8 +126,8 @@ class PrescriptionTest extends TestCase
             ->assertJsonPath('data.cedula_profesional', '12345678')
             ->assertJsonPath('data.especialidad', 'Pediatría');
 
-        // 2. Actualizar perfil con imagen de firma digital
-        $fakeSignature = UploadedFile::fake()->image('firma.png', 300, 150);
+        $pngContent = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+        $fakeSignature = UploadedFile::fake()->createWithContent('firma.png', $pngContent);
 
         $updateResponse = $this->postJson('/api/doctor/profile', [
             'name' => 'Dra. Jessie Martínez Actualizada',

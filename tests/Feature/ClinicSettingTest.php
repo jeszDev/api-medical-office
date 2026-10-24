@@ -23,7 +23,9 @@ class ClinicSettingTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $doctor;
+
     private User $patientUser;
 
     protected function setUp(): void
@@ -81,7 +83,8 @@ class ClinicSettingTest extends TestCase
     {
         Sanctum::actingAs($this->admin);
 
-        $fakeLogo = UploadedFile::fake()->image('logo_clinica.png', 400, 200);
+        $pngContent = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+        $fakeLogo = UploadedFile::fake()->createWithContent('logo_clinica.png', $pngContent);
 
         $response = $this->postJson('/api/clinic/settings', [
             'nombre' => 'Hospital Pediátrico San Ángel',

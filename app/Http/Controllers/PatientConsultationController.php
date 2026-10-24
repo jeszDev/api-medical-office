@@ -16,23 +16,19 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class PatientConsultationController extends Controller
 {
     /**
-     * Muestra la lista de consultas médicas asociadas al paciente.
+     * Display a listing of consultations for a specific patient.
      */
-    public function index(Patient $patient, Request $request): AnonymousResourceCollection
+    public function index(Request $request, Patient $patient): AnonymousResourceCollection
     {
-        $user = $request->user();
-
-        $canView = $user->hasPermissionTo('consultations.view')
-            || ($user->hasRole('patient') && $user->patients()->where('pacientes.id', $patient->id)->exists());
-
-        abort_unless($canView, 403, 'No tienes autorización para consultar el historial de este paciente.');
+        $this->authorize('view', $patient);
+        $this->authorize('viewAny', Consultation::class);
 
         $query = $patient->consultations()
-            ->with(['doctor', 'appointment'])
+            ->with(['doctor', 'appointment.status'])
             ->latest('id');
 
         if ($request->filled('search')) {
-            $search = $request->string('search')->toString();
+            $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('motivo', 'like', "%{$search}%")
                     ->orWhere('diagnostico', 'like', "%{$search}%")
@@ -40,17 +36,18 @@ class PatientConsultationController extends Controller
             });
         }
 
-        if ($request->boolean('all')) {
-            $consultations = $query->get();
-        } else {
-            $consultations = $query->paginate($request->integer('per_page', 10));
-        }
+        $all = ($request->has('page') && $request->integer('page') === 0) || $request->boolean('all');
+        $perPage = $request->integer('per_page', 10);
+
+        $consultations = $all
+            ? $query->get()
+            : $query->paginate($perPage);
 
         return ConsultationResource::collection($consultations);
     }
 
     /**
-     * Registra una nueva consulta médica directamente para el paciente.
+     * Store a newly created consultation directly for the patient (e.g. without an appointment).
      */
     public function store(
         StoreConsultationRequest $request,
@@ -74,7 +71,7 @@ class PatientConsultationController extends Controller
     }
 
     /**
-     * Muestra el detalle de una consulta específica del paciente.
+     * Display the specified consultation of the patient.
      */
     public function show(Patient $patient, Consultation $consultation): ConsultationResource
     {
@@ -82,7 +79,7 @@ class PatientConsultationController extends Controller
 
         $this->authorize('view', $consultation);
 
-        $consultation->load(['doctor', 'patient', 'appointment']);
+        $consultation->load(['doctor', 'patient', 'appointment.status']);
 
         return new ConsultationResource($consultation);
     }

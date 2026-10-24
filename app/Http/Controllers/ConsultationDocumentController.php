@@ -128,7 +128,7 @@ class ConsultationDocumentController extends Controller
 
         return response($binary, 200, [
             'Content-Type' => $document->mime_type,
-            'Content-Disposition' => 'inline; filename="' . $document->nombre_archivo_original . '"',
+            'Content-Disposition' => 'inline; filename="'.$document->nombre_archivo_original.'"',
             'Content-Length' => strlen($binary),
             'Cache-Control' => 'private, no-cache, no-store, must-revalidate',
         ]);

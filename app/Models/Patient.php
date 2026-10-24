@@ -37,6 +37,11 @@ class Patient extends Model
             ->withTimestamps();
     }
 
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class, 'paciente_id');
+    }
+
     /**
      * Usuarios responsables, tutores o titulares con acceso a este expediente.
      */
@@ -76,13 +81,5 @@ class Patient extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(ConsultationDocument::class, 'paciente_id');
-    }
-
-    /**
-     * Consultas médicas asociadas al paciente.
-     */
-    public function consultations(): HasMany
-    {
-        return $this->hasMany(Consultation::class, 'paciente_id');
     }
 }

@@ -24,6 +24,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'curp',
+        'nombre',
+        'primer_apellido',
+        'segundo_apellido',
         'email',
         'password',
         'cedula_profesional',
@@ -60,7 +64,26 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => trim("{$this->name} {$this->primer_apellido} {$this->segundo_apellido}")
+            get: fn () => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}")
+        );
+    }
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->full_name,
+            set: function (?string $value) {
+                if ($value === null) {
+                    return [];
+                }
+                $parts = explode(' ', trim($value), 3);
+
+                return [
+                    'nombre' => $parts[0] ?? '',
+                    'primer_apellido' => $parts[1] ?? '',
+                    'segundo_apellido' => $parts[2] ?? null,
+                ];
+            }
         );
     }
 

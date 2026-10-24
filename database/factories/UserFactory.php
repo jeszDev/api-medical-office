@@ -23,8 +23,15 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $nombre = fake()->firstName();
+        $primerApellido = fake()->lastName();
+        $segundoApellido = fake()->lastName();
+
         return [
-            'name' => fake()->name(),
+            'curp' => fake()->unique()->regexify('[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9]{2}'),
+            'nombre' => $nombre,
+            'primer_apellido' => $primerApellido,
+            'segundo_apellido' => $segundoApellido,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),

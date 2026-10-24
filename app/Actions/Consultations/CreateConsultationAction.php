@@ -18,12 +18,13 @@ class CreateConsultationAction
      * actualizar el estado de la cita si existe, y registrar la auditoría.
      *
      * @param  array<string, mixed>  $data
+     *
      * @throws ValidationException
      */
     public function execute(array $data, User $doctor): Consultation
     {
         // 1. Validaciones de negocio previas
-        if (!empty($data['cita_id'])) {
+        if (! empty($data['cita_id'])) {
             $appointment = Appointment::find($data['cita_id']);
             if ($appointment && $appointment->cita_estatus_id === CatalogAppointmentStatus::CANCELADA) {
                 throw ValidationException::withMessages([
@@ -39,7 +40,7 @@ class CreateConsultationAction
                 'medico_id' => $doctor->id,
             ]);
 
-            if (!empty($data['cita_id'])) {
+            if (! empty($data['cita_id'])) {
                 $appointment = Appointment::find($data['cita_id']);
                 if ($appointment) {
                     $appointment->update([

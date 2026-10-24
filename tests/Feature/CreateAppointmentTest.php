@@ -35,10 +35,10 @@ class CreateAppointmentTest extends TestCase
 
         $this->seed(RolesAndPermissionsSeeder::class);
 
-        $this->doctor = User::factory()->create(['name' => 'Dr. House']);
+        $this->doctor = User::factory()->create(['nombre' => 'Gregory', 'primer_apellido' => 'House']);
         $this->doctor->assignRole('doctor');
 
-        $this->receptionist = User::factory()->create(['name' => 'Recepcionista']);
+        $this->receptionist = User::factory()->create(['nombre' => 'Recepcionista', 'primer_apellido' => 'General']);
         $this->receptionist->assignRole('receptionist');
 
         $this->patient = Patient::create([
@@ -138,8 +138,8 @@ class CreateAppointmentTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('data.motivo', 'Consulta general')
             ->assertJsonPath('data.observaciones', 'Primera visita')
-            ->assertJsonPath('data.medico_id', $this->doctor->id)
-            ->assertJsonPath('data.cita_estatus_id', CatalogAppointmentStatus::PENDIENTE)
+            ->assertJsonPath('data.doctor.id', $this->doctor->id)
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::PENDIENTE)
             ->assertJsonPath('data.pacientes.0.id', $this->patient->id);
 
         $folio = $response->json('data.folio');

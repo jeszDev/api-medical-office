@@ -17,20 +17,21 @@ class PatientService
      *
      * @return LengthAwarePaginator<Patient>|Collection<int, Patient>
      */
-    public function list(?string $search, int $perPage = 10, bool $all = false): LengthAwarePaginator|Collection
+    public function list(?string $search = null, int $perPage = 10, bool $all = false): LengthAwarePaginator|Collection
     {
         $query = Patient::query();
 
-        if (!empty($search)) {
+        if (! empty($search)) {
             $terms = array_filter(explode(' ', trim($search)));
 
             $query->where(function (Builder $builder) use ($terms) {
                 foreach ($terms as $term) {
-                    $builder->where(function (Builder $sub) use ($term) {
+                    $upperTerm = strtoupper($term);
+                    $builder->where(function (Builder $sub) use ($term, $upperTerm) {
                         $sub->where('nombre', 'like', "%{$term}%")
                             ->orWhere('primer_apellido', 'like', "%{$term}%")
                             ->orWhere('segundo_apellido', 'like', "%{$term}%")
-                            ->orWhere('curp', 'like', "%{$term}%");
+                            ->orWhere('curp', 'like', "%{$upperTerm}%");
                     });
                 }
             });

@@ -25,10 +25,15 @@ class ConsultationDocumentTest extends TestCase
     use RefreshDatabase;
 
     private User $doctor;
+
     private User $admin;
+
     private User $tutor;
+
     private User $unrelatedPatient;
+
     private Patient $childPatient;
+
     private Consultation $consultation;
 
     protected function setUp(): void
@@ -152,7 +157,7 @@ class ConsultationDocumentTest extends TestCase
             'tipo_documento' => DocumentType::LABORATORIO->value,
             'titulo' => 'Biometría Hemática Completa',
             'nombre_archivo_original' => 'biometria.pdf',
-            'ruta_archivo' => 'consultas/' . $this->consultation->id . '/estudios/bio.pdf',
+            'ruta_archivo' => 'consultas/'.$this->consultation->id.'/estudios/bio.pdf',
             'disk' => (string) config('filesystems.default', 'local'),
             'mime_type' => 'application/pdf',
             'peso_bytes' => 500000,
@@ -184,7 +189,7 @@ class ConsultationDocumentTest extends TestCase
     public function test_doctor_can_soft_delete_document_and_file_is_preserved(): void
     {
         $disk = (string) config('filesystems.default', 'local');
-        $storedPath = 'consultas/' . $this->consultation->id . '/estudios/rx_test.png';
+        $storedPath = 'consultas/'.$this->consultation->id.'/estudios/rx_test.png';
         Storage::disk($disk)->put($storedPath, 'contenido binario simulado');
 
         $document = ConsultationDocument::create([
@@ -286,7 +291,7 @@ class ConsultationDocumentTest extends TestCase
         Sanctum::actingAs($this->tutor);
 
         // 1. Filtrar solo radiografías
-        $responseRx = $this->getJson("/api/patients/{$this->childPatient->id}/documents?tipo_documento=" . DocumentType::RADIOGRAFIA->value);
+        $responseRx = $this->getJson("/api/patients/{$this->childPatient->id}/documents?tipo_documento=".DocumentType::RADIOGRAFIA->value);
         $responseRx->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.tipo_documento', DocumentType::RADIOGRAFIA->value);

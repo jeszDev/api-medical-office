@@ -18,10 +18,15 @@ class CatalogAppointmentStatus extends Model
     protected $fillable = ['id', 'nombre'];
 
     public const PENDIENTE = 1;
+
     public const CONFIRMADA = 2;
+
     public const CANCELADA = 3;
+
     public const ATENDIDA = 4;
+
     public const NO_ASISTIO = 5;
+
     public const EN_SALA_DE_ESPERA = 6;
 
     public function appointments(): HasMany

@@ -3,7 +3,7 @@
 @section('title', 'Cita Médica Cancelada - ' . ($clinic['name'] ?? 'Clínica'))
 
 @section('preheader')
-Aviso importante: Su cita médica con {{ $doctor?->name ?? 'el especialista' }} ha sido cancelada.
+Aviso importante: Su cita médica con {{ $doctor?->full_name ?? 'el especialista' }} ha sido cancelada.
 @endsection
 
 @section('content')
@@ -58,7 +58,7 @@ Aviso importante: Su cita médica con {{ $doctor?->name ?? 'el especialista' }} 
                         Médico Tratante:
                     </td>
                     <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #0f172a;">
-                        Dr(a). {{ $doctor?->name ?? 'Médico Asignado' }}
+                        Dr(a). {{ $doctor?->full_name ?? 'Médico Asignado' }}
                     </td>
                 </tr>
                 <tr>

@@ -39,7 +39,7 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'user' => ['id', 'name', 'email', 'roles', 'permissions'],
+                'user' => ['id', 'email', 'roles', 'permissions'],
                 'token',
             ])
             ->assertJsonPath('user.email', 'doctor@example.com')
@@ -66,7 +66,8 @@ class AuthTest extends TestCase
     public function test_user_can_register_successfully(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'Dra. Claudia Ramos',
+            'nombre' => 'Claudia',
+            'primer_apellido' => 'Ramos',
             'email' => 'claudia@example.com',
             'password' => 'secret1234',
             'password_confirmation' => 'secret1234',
@@ -74,10 +75,11 @@ class AuthTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'user' => ['id', 'name', 'email'],
+                'user' => ['id', 'nombre', 'primer_apellido', 'nombre_completo', 'email'],
                 'token',
             ])
-            ->assertJsonPath('user.email', 'claudia@example.com');
+            ->assertJsonPath('user.email', 'claudia@example.com')
+            ->assertJsonPath('user.nombre_completo', 'Claudia Ramos');
 
         $this->assertDatabaseHas('users', [
             'email' => 'claudia@example.com',
@@ -89,10 +91,38 @@ class AuthTest extends TestCase
         ]);
     }
 
+    public function test_user_can_register_with_curp_and_full_name_fields(): void
+    {
+        $response = $this->postJson('/api/auth/register', [
+            'curp' => 'RAMC900101MDFR0009',
+            'nombre' => 'Claudia',
+            'primer_apellido' => 'Ramos',
+            'segundo_apellido' => 'López',
+            'email' => 'claudia.ramos@example.com',
+            'password' => 'secret1234',
+            'password_confirmation' => 'secret1234',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('user.curp', 'RAMC900101MDFR0009')
+            ->assertJsonPath('user.nombre', 'Claudia')
+            ->assertJsonPath('user.primer_apellido', 'Ramos')
+            ->assertJsonPath('user.segundo_apellido', 'López')
+            ->assertJsonPath('user.nombre_completo', 'Claudia Ramos López');
+
+        $this->assertDatabaseHas('users', [
+            'curp' => 'RAMC900101MDFR0009',
+            'nombre' => 'Claudia',
+            'primer_apellido' => 'Ramos',
+            'email' => 'claudia.ramos@example.com',
+        ]);
+    }
+
     public function test_register_validation_fails_on_duplicate_email(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'Otro Doctor',
+            'nombre' => 'Otro',
+            'primer_apellido' => 'Doctor',
             'email' => 'doctor@example.com',
             'password' => 'secret1234',
             'password_confirmation' => 'secret1234',

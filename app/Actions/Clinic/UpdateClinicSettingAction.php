@@ -18,7 +18,7 @@ class UpdateClinicSettingAction
      */
     public function execute(array $data, ?UploadedFile $logotipo = null, ?User $causer = null): ClinicSetting
     {
-        $setting = ClinicSetting::first() ?? new ClinicSetting();
+        $setting = ClinicSetting::first() ?? new ClinicSetting;
 
         if ($logotipo !== null) {
             if ($setting->logotipo_path && Storage::disk('public')->exists($setting->logotipo_path)) {

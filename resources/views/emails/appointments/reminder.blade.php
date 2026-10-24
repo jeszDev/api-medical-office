@@ -3,7 +3,7 @@
 @section('title', 'Recordatorio: Su Cita Médica es Mañana - ' . ($clinic['name'] ?? 'Clínica'))
 
 @section('preheader')
-Hola {{ $patient->nombre }}, le recordamos que mañana {{ $startDate->translatedFormat('d \d\e F') }} a las {{ $startDate->format('h:i A') }} tiene cita con {{ $doctor?->name ?? 'el médico' }}.
+Hola {{ $patient->nombre }}, le recordamos que mañana {{ $startDate->translatedFormat('d \d\e F') }} a las {{ $startDate->format('h:i A') }} tiene cita con {{ $doctor?->full_name ?? 'el médico' }}.
 @endsection
 
 @section('content')
@@ -93,7 +93,7 @@ Hola {{ $patient->nombre }}, le recordamos que mañana {{ $startDate->translated
                         Médico Especialista:
                     </td>
                     <td style="padding: 12px 18px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #0f172a; font-weight: 700;">
-                        Dr(a). {{ $doctor?->name ?? 'Médico Asignado' }}
+                        Dr(a). {{ $doctor?->full_name ?? 'Médico Asignado' }}
                     </td>
                 </tr>
                 <tr>

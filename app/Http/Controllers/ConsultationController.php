@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\Consultations\CreateConsultationAction;
+use App\Actions\Consultations\UpdateConsultationAction;
 use App\Http\Requests\Consultations\StoreConsultationRequest;
+use App\Http\Requests\Consultations\UpdateConsultationRequest;
 use App\Http\Resources\ConsultationResource;
 use App\Models\Consultation;
 use Illuminate\Http\JsonResponse;
@@ -55,6 +57,25 @@ class ConsultationController extends Controller
         $this->authorize('view', $consultation);
 
         $consultation->load(['doctor', 'patient', 'appointment']);
+
+        return new ConsultationResource($consultation);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(
+        UpdateConsultationRequest $request,
+        Consultation $consultation,
+        UpdateConsultationAction $updateConsultationAction
+    ): ConsultationResource {
+        $this->authorize('update', $consultation);
+
+        $consultation = $updateConsultationAction->execute(
+            $consultation,
+            $request->validated(),
+            $request->user()
+        );
 
         return new ConsultationResource($consultation);
     }

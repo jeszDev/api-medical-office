@@ -14,7 +14,7 @@ class ConsultationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('consultations.view');
+        return $user->hasPermissionTo('consultations.view') || $user->hasRole('patient');
     }
 
     /**
@@ -47,7 +47,15 @@ class ConsultationPolicy
      */
     public function update(User $user, Consultation $consultation): bool
     {
-        return $user->hasPermissionTo('consultations.update');
+        if (! $user->hasPermissionTo('consultations.update')) {
+            return false;
+        }
+
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        return $consultation->medico_id === $user->id;
     }
 
     /**

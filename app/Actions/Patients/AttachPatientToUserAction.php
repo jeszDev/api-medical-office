@@ -32,7 +32,7 @@ class AttachPatientToUserAction
             ->causedBy($causer ?? $user)
             ->withProperties([
                 'user_id' => $user->id,
-                'user_name' => $user->name,
+                'user_nombre_completo' => $user->full_name,
                 'user_email' => $user->email,
                 'relacion' => $relationship->value,
                 'relacion_texto' => $relationship->label(),

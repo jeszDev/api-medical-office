@@ -27,10 +27,12 @@ class PatientController extends Controller
     {
         $this->authorize('viewAny', Patient::class);
 
+        $all = ($request->has('page') && $request->integer('page') === 0) || $request->boolean('all');
+
         $patients = $this->patientService->list(
             search: $request->input('search'),
             perPage: $request->integer('per_page', 10),
-            all: $request->integer('page') === 0
+            all: $all
         );
 
         return PatientResource::collection($patients);

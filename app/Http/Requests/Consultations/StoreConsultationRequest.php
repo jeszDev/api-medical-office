@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Consultations;
 
+use App\Models\Patient;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreConsultationRequest extends FormRequest
@@ -23,9 +24,9 @@ class StoreConsultationRequest extends FormRequest
     {
         $patient = $this->route('patient');
 
-        if ($patient instanceof \App\Models\Patient) {
+        if ($patient instanceof Patient) {
             $this->mergeIfMissing(['paciente_id' => $patient->id]);
-        } elseif (is_numeric($patient)) {
+        } elseif (! empty($patient)) {
             $this->mergeIfMissing(['paciente_id' => (int) $patient]);
         }
     }
