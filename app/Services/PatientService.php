@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\RelationshipType;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -19,7 +20,10 @@ class PatientService
      */
     public function list(?string $search = null, int $perPage = 10, bool $all = false): LengthAwarePaginator|Collection
     {
-        $query = Patient::query();
+        $query = Patient::query()
+            ->withExists(['guardians as es_dependiente' => function (Builder $builder) {
+                $builder->where('paciente_usuario.relacion', '!=', RelationshipType::TITULAR->value);
+            }]);
 
         if (!empty($search)) {
             $terms = array_filter(explode(' ', trim($search)));

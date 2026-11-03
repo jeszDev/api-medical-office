@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\RelationshipType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,6 +57,30 @@ class Patient extends Model
     {
         return Attribute::make(
             get: fn () => trim("{$this->nombre} {$this->primer_apellido} {$this->segundo_apellido}")
+        );
+    }
+
+    /**
+     * Determina si el paciente es dependiente (tiene tutores o responsables vinculados).
+     */
+    protected function esDependiente(): Attribute
+    {
+        return Attribute::make(
+            get: function (): bool {
+                if (array_key_exists('es_dependiente', $this->attributes)) {
+                    return (bool) $this->attributes['es_dependiente'];
+                }
+
+                if ($this->relationLoaded('guardians')) {
+                    return $this->guardians->contains(
+                        fn (User $user) => ($user->pivot?->relacion ?? null) !== RelationshipType::TITULAR->value
+                    );
+                }
+
+                return $this->guardians()
+                    ->wherePivot('relacion', '!=', RelationshipType::TITULAR->value)
+                    ->exists();
+            }
         );
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Enums\RelationshipType;
 use App\Models\Appointment;
 use App\Models\CatalogAppointmentStatus;
 use App\Models\Consultation;
@@ -159,6 +160,7 @@ class PatientTest extends TestCase
             ->assertJsonPath('data.id', $this->patient->id)
             ->assertJsonPath('data.curp', 'GOMR800101HDFR0001')
             ->assertJsonPath('data.nombre', 'Roberto')
+            ->assertJsonPath('data.es_dependiente', false)
             ->assertJsonStructure([
                 'data' => [
                     'id',
@@ -169,6 +171,7 @@ class PatientTest extends TestCase
                     'nombre_completo',
                     'fecha_nacimiento',
                     'edad',
+                    'es_dependiente',
                 ],
             ]);
     }
@@ -363,5 +366,25 @@ class PatientTest extends TestCase
         $responseNone = $this->getJson("/api/patients/{$this->patient->id}/appointments?search=CIT-9999");
         $responseNone->assertStatus(200)
             ->assertJsonCount(0, 'data');
+    }
+
+    public function test_patient_es_dependiente_reflects_guardians_in_show_and_index(): void
+    {
+        Sanctum::actingAs($this->receptionist);
+
+        // Paciente con tutor (es_dependiente = true)
+        $tutorUser = User::factory()->create();
+        $tutorUser->patients()->attach($this->patient->id, [
+            'relacion' => RelationshipType::PADRE->value,
+            'es_contacto_principal' => true,
+        ]);
+
+        $responseShow = $this->getJson("/api/patients/{$this->patient->id}");
+        $responseShow->assertStatus(200)
+            ->assertJsonPath('data.es_dependiente', true);
+
+        $responseIndex = $this->getJson('/api/patients');
+        $responseIndex->assertStatus(200)
+            ->assertJsonPath('data.0.es_dependiente', true);
     }
 }

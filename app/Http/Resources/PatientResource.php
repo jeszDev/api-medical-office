@@ -39,6 +39,7 @@ class PatientResource extends JsonResource
             'edad' => $this->fecha_nacimiento
                 ? Carbon::parse($this->fecha_nacimiento)->age
                 : null,
+            'es_dependiente' => (bool) $this->es_dependiente,
 
             // relación con tutor o cuenta familiar (tabla pivote paciente_usuario)
             'vinculo_familiar' => $this->whenPivotLoaded('paciente_usuario', function () {
