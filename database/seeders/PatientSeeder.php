@@ -61,7 +61,7 @@ class PatientSeeder extends Seeder
         if ($carlosUser) {
             $carlosUser->patients()->syncWithoutDetaching([
                 $mateoPatient->id => [
-                    'relacion' => RelationshipType::HIJO->value,
+                    'relacion' => RelationshipType::PADRE->value,
                     'es_contacto_principal' => true,
                 ],
             ]);
@@ -93,7 +93,7 @@ class PatientSeeder extends Seeder
         if ($carlosUser) {
             $carlosUser->patients()->syncWithoutDetaching([
                 $rosaPatient->id => [
-                    'relacion' => RelationshipType::MADRE->value,
+                    'relacion' => RelationshipType::HIJO->value,
                     'es_contacto_principal' => true,
                 ],
             ]);
