@@ -211,10 +211,32 @@ class FamilyPatientTest extends TestCase
         $response = $this->getJson("/api/patients/{$child->id}/guardians");
 
         $response->assertStatus(200)
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $this->fatherUser->id)
-            ->assertJsonPath('data.0.relacion', 'padre')
-            ->assertJsonPath('data.0.relacion_texto', 'Padre')
-            ->assertJsonPath('data.0.es_contacto_principal', true);
+            ->assertJsonPath('es_dependiente', true)
+            ->assertJsonCount(1, 'tutores')
+            ->assertJsonPath('tutores.0.id', $this->fatherUser->id)
+            ->assertJsonPath('tutores.0.relacion', 'padre')
+            ->assertJsonPath('tutores.0.relacion_texto', 'Padre')
+            ->assertJsonPath('tutores.0.es_contacto_principal', true);
+    }
+
+    public function test_guardians_endpoint_returns_false_and_empty_list_for_independent_patient(): void
+    {
+        $independentPatient = Patient::create([
+            'nombre' => 'Adulto',
+            'primer_apellido' => 'Independiente',
+        ]);
+
+        $this->fatherUser->patients()->attach($independentPatient->id, [
+            'relacion' => RelationshipType::TITULAR->value,
+            'es_contacto_principal' => true,
+        ]);
+
+        Sanctum::actingAs($this->receptionist);
+
+        $response = $this->getJson("/api/patients/{$independentPatient->id}/guardians");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('es_dependiente', false)
+            ->assertJsonCount(0, 'tutores');
     }
 }

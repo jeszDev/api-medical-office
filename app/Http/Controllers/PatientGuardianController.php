@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\Patients\AttachPatientToUserAction;
 use App\Enums\RelationshipType;
 use App\Http\Requests\Patients\AttachGuardianRequest;
+use App\Http\Resources\PatientGuardianResource;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -21,27 +22,13 @@ class PatientGuardianController extends Controller
         $this->authorize('view', $patient);
 
         $guardians = $patient->guardians()
+            ->wherePivot('relacion', '!=', RelationshipType::TITULAR->value)
             ->withPivot(['relacion', 'es_contacto_principal'])
-            ->get()
-            ->map(function (User $user) {
-                $type = RelationshipType::tryFrom((string) $user->pivot->relacion);
-
-                return [
-                    'id' => $user->id,
-                    'curp' => $user->curp,
-                    'nombre' => $user->nombre,
-                    'primer_apellido' => $user->primer_apellido,
-                    'segundo_apellido' => $user->segundo_apellido,
-                    'nombre_completo' => $user->full_name,
-                    'email' => $user->email,
-                    'relacion' => $user->pivot->relacion,
-                    'relacion_texto' => $type?->label() ?? $user->pivot->relacion,
-                    'es_contacto_principal' => (bool) $user->pivot->es_contacto_principal,
-                ];
-            });
+            ->get();
 
         return response()->json([
-            'data' => $guardians,
+            'es_dependiente' => (bool) $patient->es_dependiente,
+            'tutores' => PatientGuardianResource::collection($guardians),
         ]);
     }
 
