@@ -89,7 +89,7 @@ class AppointmentFactory extends Factory
             'fecha_hora_inicio' => null,
             'fecha_hora_termino' => null,
             'fecha_preferida' => $this->faker->dateTimeBetween('+1 days', '+2 weeks')->format('Y-m-d'),
-            'turno_preferido' => $this->faker->randomElement(['manana', 'tarde', 'indistinto']),
+            'turno_preferido' => $this->faker->randomElement(['matutino', 'vespertino', 'indistinto']),
             'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
         ]);
     }

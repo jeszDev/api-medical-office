@@ -75,13 +75,13 @@ class AppointmentRequestTest extends TestCase
             'medico_id' => $this->doctor->id,
             'motivo' => 'Fiebre y dolor de garganta',
             'fecha_preferida' => $preferredDate,
-            'turno_preferido' => 'tarde',
+            'turno_preferido' => 'vespertino',
             'observaciones' => 'Favor de considerar horario después de las 4 PM',
         ]);
 
         $response->assertStatus(201)
             ->assertJsonPath('data.motivo', 'Fiebre y dolor de garganta')
-            ->assertJsonPath('data.turno_preferido', 'tarde')
+            ->assertJsonPath('data.turno_preferido', 'vespertino')
             ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::PENDIENTE)
             ->assertJsonPath('data.fecha_hora_inicio', null)
             ->assertJsonPath('data.fecha_hora_termino', null);
@@ -90,7 +90,7 @@ class AppointmentRequestTest extends TestCase
             'medico_id' => $this->doctor->id,
             'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
             'motivo' => 'Fiebre y dolor de garganta',
-            'turno_preferido' => 'tarde',
+            'turno_preferido' => 'vespertino',
         ]);
 
         $activity = Activity::where('log_name', 'citas')
@@ -113,6 +113,21 @@ class AppointmentRequestTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['paciente_id']);
+    }
+
+    public function test_appointment_request_validation_fails_on_invalid_preferred_shift(): void
+    {
+        Sanctum::actingAs($this->father);
+
+        $response = $this->postJson('/api/appointments/request', [
+            'paciente_id' => $this->child->id,
+            'medico_id' => $this->doctor->id,
+            'motivo' => 'Chequeo general',
+            'turno_preferido' => 'tarde',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['turno_preferido']);
     }
 
     public function test_receptionist_can_confirm_pending_appointment_request(): void

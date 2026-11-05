@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('fecha_hora_inicio')->nullable()->comment('Fecha y hora de inicio de la cita');
             $table->dateTime('fecha_hora_termino')->nullable()->comment('Fecha y hora de término de la cita');
             $table->date('fecha_preferida')->nullable()->comment('Fecha sugerida o solicitada por el paciente');
-            $table->string('turno_preferido', 30)->nullable()->comment('Turno preferido: manana, tarde, indistinto');
+            $table->string('turno_preferido', 30)->nullable()->comment('Turno preferido: matutino, vespertino, indistinto');
             $table->text('motivo')->nullable()->comment('motivo por el cual es la cita, chequeo, etc.');
             $table->text('observaciones')->nullable()->comment('observaciones que se establecen al momento de agendar la cita');
 
