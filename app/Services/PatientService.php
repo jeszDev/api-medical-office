@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PatientService
 {
@@ -73,20 +74,75 @@ class PatientService
      */
     public function update(Patient $patient, array $data, ?User $user = null): Patient
     {
-        $oldName = $patient->full_name;
+        return DB::transaction(function () use ($patient, $data, $user) {
+            $oldName = $patient->full_name;
 
-        $patient->update($data);
+            $patient->update($data);
 
-        activity('pacientes')
-            ->performedOn($patient)
-            ->causedBy($user)
-            ->withProperties([
-                'nombre_anterior' => $oldName,
-                'nuevo_nombre' => $patient->full_name,
-            ])
-            ->log('Paciente actualizado');
+            activity('pacientes')
+                ->performedOn($patient)
+                ->causedBy($user)
+                ->withProperties([
+                    'nombre_anterior' => $oldName,
+                    'nuevo_nombre' => $patient->full_name,
+                ])
+                ->log('Paciente actualizado');
 
-        return $patient;
+            // Sincronización inteligente: Solo si el paciente es el TITULAR de una cuenta de usuario
+            $titularUser = $patient->guardians()
+                ->wherePivot('relacion', RelationshipType::TITULAR->value)
+                ->first();
+
+            if ($titularUser) {
+                $userSyncData = [];
+
+                foreach (['nombre', 'primer_apellido', 'segundo_apellido'] as $field) {
+                    if (array_key_exists($field, $data)) {
+                        $userSyncData[$field] = $data[$field];
+                    }
+                }
+
+                if (array_key_exists('curp', $data)) {
+                    $newCurp = $data['curp'];
+                    if (!empty($newCurp)) {
+                        $curpTaken = User::where('curp', $newCurp)
+                            ->where('id', '!=', $titularUser->id)
+                            ->exists();
+
+                        if (!$curpTaken) {
+                            $userSyncData['curp'] = $newCurp;
+                        }
+                    } else {
+                        $userSyncData['curp'] = null;
+                    }
+                }
+
+                if (!empty($data['correo_electronico']) && $data['correo_electronico'] !== $titularUser->email) {
+                    $emailTaken = User::where('email', $data['correo_electronico'])
+                        ->where('id', '!=', $titularUser->id)
+                        ->exists();
+
+                    if (!$emailTaken) {
+                        $userSyncData['email'] = $data['correo_electronico'];
+                    }
+                }
+
+                if (!empty($userSyncData)) {
+                    $titularUser->update($userSyncData);
+
+                    activity('users')
+                        ->performedOn($titularUser)
+                        ->causedBy($user)
+                        ->withProperties([
+                            'motivo' => 'Sincronización automática desde expediente clínico titular',
+                            'campos' => array_keys($userSyncData),
+                        ])
+                        ->log('Cuenta de usuario sincronizada');
+                }
+            }
+
+            return $patient;
+        });
     }
 
     /**

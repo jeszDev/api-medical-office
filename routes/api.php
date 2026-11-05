@@ -10,6 +10,7 @@ use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\PatientConsultationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientGuardianController;
+use App\Http\Controllers\UserProfileController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return new UserResource($request->user()->loadMissing(['doctor.specialties', 'patients']));
 })->middleware('auth:sanctum');
+
+Route::match(['put', 'patch'], '/user', [UserProfileController::class, 'update'])
+    ->middleware('auth:sanctum')
+    ->name('user.profile.update');
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
