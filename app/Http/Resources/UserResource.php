@@ -26,6 +26,14 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'roles' => $this->getRoleNames(),
             'permissions' => $this->getAllPermissions()->pluck('name'),
+            'doctor' => $this->when(
+                $this->hasRole('doctor') && $this->doctor,
+                fn () => new DoctorResource($this->doctor->loadMissing('specialties'))
+            ),
+            'patient' => $this->when(
+                $this->hasRole('patient') && $this->patientProfile(),
+                fn () => new PatientResource($this->patientProfile())
+            ),
         ];
     }
 }

@@ -41,7 +41,7 @@ class AuthController extends Controller
     public function checkStatus(Request $request): JsonResponse
     {
         /** @var User $user */
-        $user = $request->user();
+        $user = $request->user()->loadMissing(['doctor.specialties', 'patients']);
         $token = $this->authService->refreshToken($user);
 
         return response()->json([

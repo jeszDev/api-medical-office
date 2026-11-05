@@ -27,7 +27,9 @@ class AuthService
             ]);
         }
 
-        $user = User::where('email', $credentials['email'])->firstOrFail();
+        $user = User::where('email', $credentials['email'])
+            ->with(['doctor.specialties', 'patients'])
+            ->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         activity('auth')
