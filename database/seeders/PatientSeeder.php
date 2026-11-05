@@ -122,7 +122,31 @@ class PatientSeeder extends Seeder
             ]);
         }
 
-        // 5. Pacientes adicionales para enriquecer la base de datos
+        // 5. Paciente que además es Médico (Dra. Sofía Ramírez Morales)
+        $sofiaUser = User::where('email', 'sofia.doctor@gmail.com')->first();
+        if ($sofiaUser) {
+            $sofiaPatient = Patient::firstOrCreate(
+                ['curp' => 'RAMS890412MDFR0009'],
+                [
+                    'nombre' => 'Sofía',
+                    'primer_apellido' => 'Ramírez',
+                    'segundo_apellido' => 'Morales',
+                    'fecha_nacimiento' => '1989-04-12',
+                    'telefono' => '5553334455',
+                    'correo_electronico' => 'sofia.doctor@gmail.com',
+                    'observaciones' => 'Médico y paciente de la clínica. Sin alergias graves conocidas. Tipo sanguíneo O positivo.',
+                ]
+            );
+
+            $sofiaUser->patients()->syncWithoutDetaching([
+                $sofiaPatient->id => [
+                    'relacion' => RelationshipType::TITULAR->value,
+                    'es_contacto_principal' => true,
+                ],
+            ]);
+        }
+
+        // 6. Pacientes adicionales para enriquecer la base de datos
         Patient::factory()->count(4)->create();
         Patient::factory()->menorDeEdad()->count(2)->create();
         Patient::factory()->conAlergias()->count(3)->create();
