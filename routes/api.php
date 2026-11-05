@@ -4,6 +4,7 @@ use App\Http\Controllers\AppointmentConsultationController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\DoctorProfileController;
 use App\Http\Controllers\MyPatientController;
 use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\PatientConsultationController;
@@ -14,7 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
-    return new UserResource($request->user());
+    return new UserResource($request->user()->loadMissing(['doctor.specialties', 'patients']));
 })->middleware('auth:sanctum');
 
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -23,6 +24,12 @@ Route::post('/auth/check-status', [AuthController::class, 'checkStatus'])->middl
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+    // Perfil profesional del médico
+    Route::middleware('role:doctor')->prefix('doctor')->group(function () {
+        Route::get('profile', [DoctorProfileController::class, 'show'])->name('doctor.profile.show');
+        Route::match(['put', 'patch'], 'profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
+    });
+
     // Gestión de perfil familiar y dependientes (Autoservicio para el usuario/paciente)
     Route::get('my-patients', [MyPatientController::class, 'index'])->name('my-patients.index');
     Route::post('my-patients', [MyPatientController::class, 'store'])->name('my-patients.store');
