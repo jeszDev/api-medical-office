@@ -101,6 +101,29 @@ class AppointmentRequestTest extends TestCase
         $this->assertEquals($this->father->id, $activity->causer_id);
     }
 
+    public function test_patient_can_request_appointment_without_specifying_doctor(): void
+    {
+        Sanctum::actingAs($this->father);
+
+        $response = $this->postJson('/api/appointments/request', [
+            'paciente_id' => $this->child->id,
+            'motivo' => 'Consulta general sin médico preferido',
+            'fecha_preferida' => Carbon::tomorrow()->format('Y-m-d'),
+            'turno_preferido' => 'matutino',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.motivo', 'Consulta general sin médico preferido')
+            ->assertJsonPath('data.doctor', null)
+            ->assertJsonPath('data.estatus.id', CatalogAppointmentStatus::PENDIENTE);
+
+        $this->assertDatabaseHas('citas', [
+            'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
+            'motivo' => 'Consulta general sin médico preferido',
+            'medico_id' => null,
+        ]);
+    }
+
     public function test_father_cannot_request_appointment_for_unrelated_patient(): void
     {
         Sanctum::actingAs($this->father);

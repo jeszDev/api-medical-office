@@ -28,7 +28,14 @@ class ConfirmAppointmentAction
             ]);
         }
 
-        $doctorId = ! empty($data['medico_id']) ? (int) $data['medico_id'] : (int) $appointment->medico_id;
+        $doctorId = ! empty($data['medico_id']) ? (int) $data['medico_id'] : ($appointment->medico_id ? (int) $appointment->medico_id : null);
+
+        if (empty($doctorId)) {
+            throw ValidationException::withMessages([
+                'medico_id' => ['Debe asignar un médico para confirmar la cita médica.'],
+            ]);
+        }
+
         $startDateRaw = $data['fecha_hora_inicio'] ?? $appointment->fecha_hora_inicio;
         $endDateRaw = $data['fecha_hora_termino'] ?? $appointment->fecha_hora_termino;
 

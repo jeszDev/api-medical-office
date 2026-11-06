@@ -27,7 +27,7 @@ class RequestAppointmentRequest extends FormRequest
     {
         return [
             'paciente_id' => ['required', 'integer', 'exists:pacientes,id'],
-            'medico_id' => ['required', 'integer', 'exists:users,id'],
+            'medico_id' => ['nullable', 'integer', 'exists:users,id'],
             'motivo' => ['required', 'string', 'max:1000'],
             'fecha_preferida' => ['nullable', 'date', 'after_or_equal:today'],
             'turno_preferido' => ['nullable', 'string', Rule::in(PreferredShift::values())],

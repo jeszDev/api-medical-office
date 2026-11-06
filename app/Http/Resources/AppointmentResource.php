@@ -27,10 +27,10 @@ class AppointmentResource extends JsonResource
             'motivo' => $this->motivo,
             'observaciones' => $this->observaciones,
 
-            'doctor' => [
+            'doctor' => $this->medico_id ? [
                 'id' => $this->doctor?->id ?? $this->medico_id,
                 'nombre_completo' => $this->doctor?->full_name,
-            ],
+            ] : null,
             'estatus' => [
                 'id' => $this->status?->id ?? $this->cita_estatus_id,
                 'nombre' => $this->status?->nombre,

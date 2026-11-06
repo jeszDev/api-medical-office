@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('motivo')->nullable()->comment('motivo por el cual es la cita, chequeo, etc.');
             $table->text('observaciones')->nullable()->comment('observaciones que se establecen al momento de agendar la cita');
 
-            $table->foreignId('medico_id')->constrained(
+            $table->foreignId('medico_id')->nullable()->constrained(
                 table: 'users',
                 indexName: 'medico_id'
             );

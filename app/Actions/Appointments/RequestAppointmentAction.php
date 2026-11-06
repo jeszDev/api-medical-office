@@ -44,7 +44,7 @@ class RequestAppointmentAction
                 'turno_preferido' => $data['turno_preferido'] ?? null,
                 'motivo' => $data['motivo'],
                 'observaciones' => $data['observaciones'] ?? null,
-                'medico_id' => $data['medico_id'],
+                'medico_id' => $data['medico_id'] ?? null,
                 'cita_estatus_id' => CatalogAppointmentStatus::PENDIENTE,
             ]);
 
